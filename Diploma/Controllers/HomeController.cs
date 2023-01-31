@@ -1,6 +1,8 @@
 ﻿using Diploma.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
+using System.Text.Json;
 
 namespace Diploma.Controllers
 {
@@ -13,10 +15,17 @@ namespace Diploma.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async void Index()
         {
-            return View();
-        }
+
+         string? host = HttpContext.Request.Host.Value;
+         string? path = HttpContext.Request.Path.Value;
+         string? query = HttpContext.Request.QueryString.Value;
+         var response = new { host = host, path = path, query = query };
+         await HttpContext.Response.WriteAsync(
+             JsonSerializer.Serialize(response)
+             );
+            }
 
         public IActionResult Privacy()
         {

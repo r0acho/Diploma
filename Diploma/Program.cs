@@ -31,7 +31,6 @@ namespace Diploma
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-
             app.Use(async (context, next) =>
             {
                 string? host = context.Request.Host.Value;
