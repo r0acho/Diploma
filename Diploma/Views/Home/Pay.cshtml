@@ -5,9 +5,10 @@
 
 
 <form id='payment_form' action='https://test.3ds.payment.ru/cgi-bin/cgi_link' method = 'POST'>
-    @foreach (var item in Model)
+@foreach (var item in Model)
 {
-        <input name='@item.Key.ToUpper()' value='@item.Value' />
+     <input name='@item.Key.ToUpper()' value='@item.Value'/>
 }
+    <input type='submit' name='SUBMIT' value='Перейти к оплате' />
 </form>
 <script type='text/javascript'>document.getElementById('payment_form').submit();</script>
