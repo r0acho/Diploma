@@ -9,23 +9,23 @@
         /// <summary>
         /// Первая компонента ключа
         /// </summary>
-        static byte[] comp1 = Convert.FromHexString("C50E41160302E0F5D6D59F1AA3925C45");
+        private static byte[] comp1 = Convert.FromHexString("C50E41160302E0F5D6D59F1AA3925C45");
 
         /// <summary>
         /// Вторая компонента ключа
         /// </summary>
-        static byte[] comp2 = Convert.FromHexString("00000000000000000000000000000000");
+        private static byte[] comp2 = Convert.FromHexString("00000000000000000000000000000000");
 
 
         /// <summary>
         /// Секретный ключ
         /// </summary>
-        static byte[] secretKey;
+        public static byte[] secretKey;
 
         /// <summary>
         /// URL ПШ для тестовой среды
         /// </summary>
-        static string bankUrl = "https://test.3ds.payment.ru/cgi-bin/cgi_link";
+        public static string bankUrl = "https://test.3ds.payment.ru/cgi-bin/cgi_link";
 
         static Enviroment()
         {
