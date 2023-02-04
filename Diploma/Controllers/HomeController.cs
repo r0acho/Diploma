@@ -1,7 +1,6 @@
 ﻿using Diploma.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using static System.Net.Mime.MediaTypeNames;
 using System.Text.Json;
 
 namespace Diploma.Controllers
@@ -25,12 +24,12 @@ namespace Diploma.Controllers
          await HttpContext.Response.WriteAsync(
              JsonSerializer.Serialize(response)
              );
-            }
-
-        public IActionResult Privacy()
-        {
-            return View();
         }
+
+        //public IActionResult Privacy()
+        //{
+        //    return View();
+        //}
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -31,17 +31,6 @@ namespace Diploma
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-            app.Use(async (context, next) =>
-            {
-                string? host = context.Request.Host.Value;
-                string? path = context.Request.Path.Value;
-                string? query = context.Request.QueryString.Value;
-                var response = new { host = host, path = path, query = query };
-                await context.Response.WriteAsync(
-                    JsonSerializer.Serialize(response)
-                    );
-                await next();
-            });
 
             app.Run();
         }
