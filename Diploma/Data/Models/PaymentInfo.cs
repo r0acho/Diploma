@@ -26,14 +26,14 @@ namespace Diploma.Data.Models
         /// <summary>
         /// JSON для тестовой модели
         /// </summary>
-        static string testJson = $"{{\r\n  \"AMOUNT\": 300.2,\r\n  " +
+        public static string testJson = $"{{\r\n  \"AMOUNT\": 300.2,\r\n  " +
             $"\"CURRENCY\": \"RUB\",\r\n  \"ORDER\": \"{Random.Shared.Next(10000000, 90000000)}\",\r\n " +
             $" \"DESC\": \"Test Payment\",\r\n  \"TERMINAL\": \"79036777\",\r\n  " +
             $"\"TRTYPE\": 1,\r\n  \"MERCH_NAME\": \"Test Shop\",\r\n  \"MERCHANT\": " +
             $"\"000599979036777\",\r\n  \"EMAIL\": \"cardholder@mail.test\",\r\n  " +
             $"\"TIMESTAMP\": {DateTime.UtcNow.ToString("yyyyMMddHHmmss")},\r\n  \"NONCE\": \"8b495c3669edb02003c2dca666d2182a\"," +
-            $"\r\n  \"BACKREF\": \"https://localhost:7269/index\",\r\n  \"NOTIFY_REF\": " +
-            $"\"https://localhost:7269/index\",\r\n  \"CALDHOLDER_NOTIFY\": \"EMAIL\",\r\n  " +
+            $"\r\n  \"BACKREF\": \"https://localhost:7269\",\r\n  \"NOTIFY_REF\": " +
+            $"\"https://localhost:7269\",\r\n  \"CALDHOLDER_NOTIFY\": \"EMAIL\",\r\n  " +
             $"\"MERCHANT_NOTIFY\": \"EMAIL\",\r\n  \"MERCHANT_NOTIFY_EMAIL\": \"merchant@mail.test\"\r\n}}";
 
         /// <summary>
@@ -69,10 +69,20 @@ namespace Diploma.Data.Models
                 model.TryGetValue(key, out object? value);
                 if (value is not null)
                 {
-                    JsonElement el = (JsonElement)value;
-                    string currentValue = el.GetRawText().Replace("\"", string.Empty);
-                    Console.WriteLine(currentValue);
-                    currentValue = currentValue.Length != 0 ? currentValue.Length.ToString() + currentValue : "-";
+                    string currentValue = string.Empty;
+                    if (value is JsonElement jsonElement)
+                    {
+                        currentValue = jsonElement.GetRawText().Replace("\"", string.Empty);
+                        currentValue = currentValue.Length != 0 ? currentValue.Length.ToString() + currentValue : "-";
+                    }
+                    else if(value is int intElement)
+                    {
+                        currentValue = intElement.ToString().Length != 0 ? intElement.ToString().Length + intElement.ToString() : "-";
+                    }
+                    else if (value is string stringElement) 
+                    {
+                        currentValue = stringElement.Length != 0 ? stringElement.Length.ToString() + stringElement : "-"; ;
+                    }
                     concatedKeysBuilder.Append(currentValue);
                 }
                 else
@@ -97,11 +107,17 @@ namespace Diploma.Data.Models
             return Convert.ToHexString(pSignBytes);
         }
 
-        public IDictionary<string, object> PrepareSendingData(IDictionary<string, object> model)
+        protected virtual void PrepareSendingData(IDictionary<string, object> model)
         {
+
+        }
+
+
+        public void SetRequestingModel(IDictionary<string, object> model)
+        {
+            PrepareSendingData(model);
             string pSign = CalculatePSign(model);
             model["P_SIGN"] = pSign;
-            return model;
         }
 
     }

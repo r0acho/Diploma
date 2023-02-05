@@ -33,7 +33,16 @@ namespace Diploma.Controllers
         public IActionResult Pay()
         {
             var pay = new Payment();
-            IDictionary<string, object> data = pay.PrepareSendingData(Payment.GetTestModel());
+            var data = Payment.GetTestModel(); //данные должны приходить извне, но пока источника данных нет
+            pay.SetRequestingModel(data);
+            return View(data);
+        }
+
+        public IActionResult PreAuthorization()
+        {
+            var pay = new PreAuthorization();
+            var data = Payment.GetTestModel(); //данные должны приходить извне, но пока источника данных нет
+            pay.SetRequestingModel(data);
             return View(data);
         }
 
