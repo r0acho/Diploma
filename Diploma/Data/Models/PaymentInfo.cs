@@ -61,7 +61,7 @@ namespace Diploma.Data.Models
             return JsonSerializer.Deserialize<ExpandoObject>(testJson)!;
         }
 
-        public string CalculatePSign(IDictionary<string, object> model)
+        public string ConcatData(IDictionary<string, object> model)
         {
             var concatedKeysBuilder = new StringBuilder();
             foreach (var key in PSignOrder)
@@ -81,9 +81,12 @@ namespace Diploma.Data.Models
                 }
             }
 
-            string concatedKeys = concatedKeysBuilder.ToString();
+            return concatedKeysBuilder.ToString();
+        }
 
-
+        public string CalculatePSign(IDictionary<string, object> model)
+        {
+            string concatedKeys = ConcatData(model);
             byte[] concatedKeysBytes = Encoding.UTF8.GetBytes(concatedKeys);
             byte[] pSignBytes;
 
