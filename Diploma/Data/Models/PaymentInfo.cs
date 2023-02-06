@@ -98,7 +98,7 @@ namespace Diploma.Data.Models
             byte[] concatedKeysBytes = Encoding.UTF8.GetBytes(concatedKeys);
             byte[] pSignBytes;
 
-            using (var encoder = new HMACSHA256(Enviroment.secretKey))
+            using (var encoder = new HMACSHA256(BankEnviroment.secretKey))
             {
                 pSignBytes = encoder.ComputeHash(concatedKeysBytes);
             }

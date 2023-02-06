@@ -56,6 +56,11 @@ namespace Diploma.Controllers
             return View(PrepareModel(new Abort(), Payment.GetTestModel()));
         }
 
+        public IActionResult EndOfCalculation()
+        {
+            return View(PrepareModel(new EndOfCalculation(), Payment.GetTestModel()));
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
