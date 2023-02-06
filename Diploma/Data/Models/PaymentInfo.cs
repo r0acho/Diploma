@@ -1,4 +1,5 @@
-﻿using Diploma.Data.Interfaces;
+﻿using Diploma.Data.Enums;
+using Diploma.Data.Interfaces;
 using System.Dynamic;
 using System.Security.Cryptography;
 using System.Text;
@@ -7,16 +8,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Diploma.Data.Models
 {
-    enum TRTYPE
-    {
-        PreAuthorization = 12,
-        Abort = 22,
-        Pay = 1,
-        EndOfCalculation = 21,
-        Return = 14,
-        Reccuring = 171,
-        CheckCard = 39
-    }
+
 
     /// <summary>
     /// Класс для хранения полей, необходимых для оплаты транзакции в ПСБ
@@ -26,7 +18,7 @@ namespace Diploma.Data.Models
         /// <summary>
         /// Тип банковой операции
         /// </summary>
-        protected virtual int TRTYPE { get; } = 1;
+        protected virtual TrType trType { get; } = TrType.Pay;
         /// <summary>
         /// JSON для тестовой модели
         /// </summary>
@@ -118,7 +110,7 @@ namespace Diploma.Data.Models
         /// </summary>
         /// <param name="model">Модель, пришедшая извне (от ТАЧ)</param>
         /// <returns>Готовая к отправке в банк модель</returns>
-        protected virtual IDictionary<string, object> PrepareSendingData(IDictionary<string, object> model)//дальше здесь будет обработка файла ТАЧ
+        protected IDictionary<string, object> PrepareSendingData(IDictionary<string, object> model)//дальше здесь будет обработка файла ТАЧ
         {
             var newModel = new Dictionary<string, object>();
 
@@ -135,14 +127,19 @@ namespace Diploma.Data.Models
                 }
             }
 
-            newModel["TRTYPE"] = TRTYPE;
+            newModel["TRTYPE"] = (int)trType;
             return newModel;
         }
 
+        protected virtual void ChangeChildMembers(IDictionary<string, object> model)
+        {
+
+        }
 
         public IDictionary<string, object> SetRequestingModel(IDictionary<string, object> model)
         {
             var sendingModel = PrepareSendingData(model);
+            ChangeChildMembers(sendingModel);
             string pSign = CalculatePSign(sendingModel);
             sendingModel["P_SIGN"] = pSign;
             return sendingModel;

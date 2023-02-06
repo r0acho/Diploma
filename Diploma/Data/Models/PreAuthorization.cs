@@ -1,9 +1,10 @@
-﻿using Diploma.Data.Interfaces;
+﻿using Diploma.Data.Enums;
+using Diploma.Data.Interfaces;
 
 namespace Diploma.Data.Models
 {
     public class PreAuthorization : Payment, IRequestingBank
     {
-        protected override int TRTYPE { get; } = 12;
+        protected override TrType trType { get; } = TrType.PreAuthorization;
     }
 }
