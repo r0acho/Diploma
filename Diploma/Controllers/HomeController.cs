@@ -1,4 +1,5 @@
-﻿using Diploma.Data.Models;
+﻿using Diploma.Data.Interfaces;
+using Diploma.Data.Models;
 using Diploma.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -30,20 +31,24 @@ namespace Diploma.Controllers
             return View();
         }
 
+        public IDictionary<string, object> PrepareModel (IRequestingBank operation, IDictionary<string, object> model)
+        {
+            return operation.SetRequestingModel(model);
+        }
+
         public IActionResult Pay()
         {
-            var pay = new Payment();
-            var data = Payment.GetTestModel(); //данные должны приходить извне, но пока источника данных нет
-            pay.SetRequestingModel(data);
-            return View(data);
+            return View(PrepareModel(new Payment(), Payment.GetTestModel()));
         }
 
         public IActionResult PreAuthorization()
         {
-            var pay = new PreAuthorization();
-            var data = Payment.GetTestModel(); //данные должны приходить извне, но пока источника данных нет
-            pay.SetRequestingModel(data);
-            return View(data);
+            return View(PrepareModel(new PreAuthorization(), Payment.GetTestModel()));
+        }
+
+        public IActionResult Return()
+        {
+            return View(PrepareModel(new Return(), Payment.GetTestModel()));
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

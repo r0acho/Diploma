@@ -24,9 +24,13 @@ namespace Diploma.Data.Models
     public class Payment : IRequestingBank
     {
         /// <summary>
+        /// Тип банковой операции
+        /// </summary>
+        protected virtual int TRTYPE { get; } = 1;
+        /// <summary>
         /// JSON для тестовой модели
         /// </summary>
-        public static string testJson = $"{{\r\n  \"AMOUNT\": 300.2,\r\n  " +
+        protected static string testJson = $"{{\r\n  \"AMOUNT\": 300.2,\r\n  " +
             $"\"CURRENCY\": \"RUB\",\r\n  \"ORDER\": \"{Random.Shared.Next(10000000, 90000000)}\",\r\n " +
             $" \"DESC\": \"Test Payment\",\r\n  \"TERMINAL\": \"79036777\",\r\n  " +
             $"\"TRTYPE\": 1,\r\n  \"MERCH_NAME\": \"Test Shop\",\r\n  \"MERCHANT\": " +
@@ -34,20 +38,22 @@ namespace Diploma.Data.Models
             $"\"TIMESTAMP\": {DateTime.UtcNow.ToString("yyyyMMddHHmmss")},\r\n  \"NONCE\": \"8b495c3669edb02003c2dca666d2182a\"," +
             $"\r\n  \"BACKREF\": \"https://localhost:7269\",\r\n  \"NOTIFY_REF\": " +
             $"\"https://localhost:7269\",\r\n  \"CALDHOLDER_NOTIFY\": \"EMAIL\",\r\n  " +
-            $"\"MERCHANT_NOTIFY\": \"EMAIL\",\r\n  \"MERCHANT_NOTIFY_EMAIL\": \"merchant@mail.test\"\r\n}}";
+            $"\"MERCHANT_NOTIFY\": \"EMAIL\",\r\n  \"MERCHANT_NOTIFY_EMAIL\": \"merchant@mail.test\", \r\n" +
+            /*поля для теста возврата*/
+            $"\"org_amount\": 300.2, \r\n \"rrn\": \"911491440337\", \r\n \"int_ref\": \"1ED52C3B234CBAF8\"}}";
 
         /// <summary>
         /// Поля, которые нужно отправить для проведения транзакции
         /// </summary>
-        public static readonly List<string> RequestKeys = new List<string> {
+        protected static List<string> RequestKeys = new List<string> {
             "AMOUNT", "CURRENCY", "ORDER", "DESC", "TERMINAL", "TRTYPE","MERCH_NAME",
-            "MERCHANT","EMAIL", "TIMESTAMP","NONCE","BACKREF","NOTIFY_URL","P_SIGN"
+            "MERCHANT","EMAIL", "TIMESTAMP","NONCE","BACKREF","NOTIFY_URL"
         };
 
         /// <summary>
         /// Порядок полей для вычисления параметра P_SIGN
         /// </summary>
-        public static readonly List<string> PSignOrder = new List<string> {
+        public static List<string> PSignOrder = new List<string> {
             "AMOUNT", "CURRENCY", "ORDER", "MERCH_NAME", "MERCHANT",
             "TERMINAL", "EMAIL", "TRTYPE", "TIMESTAMP", "NONCE", "BACKREF"
         };
@@ -107,17 +113,39 @@ namespace Diploma.Data.Models
             return Convert.ToHexString(pSignBytes);
         }
 
-        protected virtual void PrepareSendingData(IDictionary<string, object> model)
+        /// <summary>
+        /// Метод для подготовки данных по нужным ключам в банк
+        /// </summary>
+        /// <param name="model">Модель, пришедшая извне (от ТАЧ)</param>
+        /// <returns>Готовая к отправке в банк модель</returns>
+        protected virtual IDictionary<string, object> PrepareSendingData(IDictionary<string, object> model)//дальше здесь будет обработка файла ТАЧ
         {
+            var newModel = new Dictionary<string, object>();
 
+            foreach (var key in RequestKeys)
+            {
+                model.TryGetValue(key, out object? value);
+                if (value is not null)
+                {
+                    newModel[key] = value;
+                }
+                else
+                {
+                    newModel[key] = string.Empty;
+                }
+            }
+
+            newModel["TRTYPE"] = TRTYPE;
+            return newModel;
         }
 
 
-        public void SetRequestingModel(IDictionary<string, object> model)
+        public IDictionary<string, object> SetRequestingModel(IDictionary<string, object> model)
         {
-            PrepareSendingData(model);
-            string pSign = CalculatePSign(model);
-            model["P_SIGN"] = pSign;
+            var sendingModel = PrepareSendingData(model);
+            string pSign = CalculatePSign(sendingModel);
+            sendingModel["P_SIGN"] = pSign;
+            return sendingModel;
         }
 
     }

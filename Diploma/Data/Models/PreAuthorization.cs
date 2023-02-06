@@ -4,9 +4,6 @@ namespace Diploma.Data.Models
 {
     public class PreAuthorization : Payment, IRequestingBank
     {
-        protected override void PrepareSendingData(IDictionary<string, object> model)
-        {
-            model["TRTYPE"] = 12;
-        }
+        protected override int TRTYPE { get; } = 12;
     }
 }
