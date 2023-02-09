@@ -4,7 +4,7 @@
     /// Класс для хранения всего, что переедет в переменные окружения (или в хранилище секретов ASP.NET)
     /// Пока храню информацию, которую не страшно показать :)
     /// </summary>
-    public static class Enviroment
+    public static class BankEnviroment
     {
         /// <summary>
         /// Первая компонента ключа
@@ -27,7 +27,7 @@
         /// </summary>
         public static string bankUrl = "https://test.3ds.payment.ru/cgi-bin/cgi_link";
 
-        static Enviroment()
+        static BankEnviroment()
         {
             secretKey = comp1.Zip(comp2, (a, b) => (byte)(a ^ b)).ToArray();
         }
