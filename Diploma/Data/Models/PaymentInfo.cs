@@ -37,7 +37,7 @@ namespace Diploma.Data.Models
         /// <summary>
         /// Поля, которые нужно отправить для проведения транзакции
         /// </summary>
-        protected static List<string> RequestKeys = new List<string> {
+        protected virtual List<string> RequestKeys { get; init; } = new List<string> {
             "AMOUNT", "CURRENCY", "ORDER", "DESC", "TERMINAL", "TRTYPE","MERCH_NAME",
             "MERCHANT","EMAIL", "TIMESTAMP","NONCE","BACKREF","NOTIFY_URL"
         };
@@ -45,7 +45,7 @@ namespace Diploma.Data.Models
         /// <summary>
         /// Порядок полей для вычисления параметра P_SIGN
         /// </summary>
-        public static List<string> PSignOrder = new List<string> {
+        protected virtual List<string> PSignOrder { get; init; } = new List<string> {
             "AMOUNT", "CURRENCY", "ORDER", "MERCH_NAME", "MERCHANT",
             "TERMINAL", "EMAIL", "TRTYPE", "TIMESTAMP", "NONCE", "BACKREF"
         };
@@ -64,7 +64,7 @@ namespace Diploma.Data.Models
             var concatedKeysBuilder = new StringBuilder();
             foreach (var key in PSignOrder)
             {
-                model.TryGetValue(key, out string? value);
+                model.TryGetValue(key, out var value);
                 if (value is not null)
                 {
                     string currentValue = string.Empty;

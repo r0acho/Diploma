@@ -8,68 +8,51 @@ namespace Diploma.Controllers
 {
     public class NotifyController : Controller
     {
-        private bool isSuccess = false;
+        private bool _isSuccess = false;
 
-        private static IRequestingBank? GetCurrentOperation(TrType trType)
+        private static IRequestingBank GetCurrentOperation(TrType trType)
         {
-            switch (trType)
+            return trType switch
             {
-                case TrType.Pay:
-                    return new Payment();
-                case TrType.Abort:
-                    return new Abort();
-                case TrType.Return:
-                    return new Return();
-                case TrType.PreAuthorization: 
-                    return new PreAuthorization();
-                case TrType.EndOfCalculation:
-                    return new EndOfCalculation();
-                    //остальные кейсы доработать
-            }
-            throw new Exception("Нет нужной операции");
+                TrType.Pay => new Payment(),
+                TrType.Abort => new Abort(),
+                TrType.Return => new Return(),
+                TrType.PreAuthorization => new PreAuthorization(),
+                TrType.EndOfCalculation => new EndOfCalculation(),
+                _ => throw new Exception("Нет нужной операции")
+            };
         }
 
-        private IDictionary<string, object> GetReceivedModel(IFormCollection receivedModel)
+        private static IDictionary<string, string> GetReceivedModel(IFormCollection receivedModel)
         {
-            var newModel = new Dictionary<string, object>();
+            var newModel = new Dictionary<string, string>();
 
             foreach (var key in receivedModel.Keys)
             {
-                receivedModel.TryGetValue(key, out StringValues value);
-                if (value.ToString() is not null)
-                {
-                    newModel[key] = value;
-                }
-                else
-                {
-                    newModel[key] = string.Empty;
-                }
+                receivedModel.TryGetValue(key, out var value);
+                newModel[key] = value.ToString();
             }
             return newModel;
         }
 
-        //[HttpPost]
-        //public void Index()
-        //{
-        //    var bankPsign = HttpContext.Request.Form["P_SIGN"];
-        //    var trTypeString = HttpContext.Request.Form["TRTYPE"];
-        //    int.TryParse(trTypeString.ToString(), out int result);
-        //    TrType trType = (TrType)result;
+        [HttpPost]
+        public void Index()
+        {
+            var bankPSign = HttpContext.Request.Form["P_SIGN"];
+            var trTypeString = HttpContext.Request.Form["TRTYPE"];
+            int.TryParse(trTypeString.ToString(), out int result);
+            var trType = (TrType)result;
 
-        //    var operation = GetCurrentOperation(trType);
-        //    string modulePsign = string.Empty;
-        //    if (operation is not null) 
-        //    {
-        //        modulePsign = operation.CalculatePSign(GetReceivedModel(Request.Form));
-        //    }
+            var operation = GetCurrentOperation(trType);
+            string modulePSign = operation.CalculatePSign(GetReceivedModel(Request.Form));
 
-        //    isSuccess = modulePsign == bankPsign;
+            _isSuccess = modulePSign == bankPSign;
             
-        //}
+        }
 
         public string CheckStatus()
         {
-            return isSuccess ? "Операция прошла успешно, ключи совпали" : "Операция отклонена (ключи не совпали)";
+            return _isSuccess ? "Операция прошла успешно, ключи совпали" : "Операция отклонена (ключи не совпали)";
         }
     }
 }
