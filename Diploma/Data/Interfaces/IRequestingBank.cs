@@ -2,7 +2,7 @@
 {
     public interface IRequestingBank
     {
-        string CalculatePSign(IDictionary<string, object> model);
-        IDictionary<string, object> SetRequestingModel(IDictionary<string, object> model);
+        string CalculatePSign(IDictionary<string, string> model);
+        IDictionary<string, string> SetRequestingModel(IDictionary<string, object?> model);
     }
 }

@@ -54,30 +54,21 @@ namespace Diploma.Data.Models
         /// Метод, возвращающий тестовую модель
         /// </summary>
         /// <returns>Словарь {string: JsonObject}</returns>
-        public static IDictionary<string, object> GetTestModel()
+        public static IDictionary<string, object?> GetTestModel()
         {
             return JsonSerializer.Deserialize<ExpandoObject>(testJson)!;
         }
 
-        public string ConcatData(IDictionary<string, object> model)
+        public string ConcatData(IDictionary<string, string> model)
         {
             var concatedKeysBuilder = new StringBuilder();
             foreach (var key in PSignOrder)
             {
-                model.TryGetValue(key, out object? value);
+                model.TryGetValue(key, out string? value);
                 if (value is not null)
                 {
                     string currentValue = string.Empty;
-                    if (value is JsonElement jsonElement)
-                    {
-                        currentValue = jsonElement.GetRawText().Replace("\"", string.Empty);
-                        currentValue = currentValue.Length != 0 ? currentValue.Length.ToString() + currentValue : "-";
-                    }
-                    else if(value is int intElement)
-                    {
-                        currentValue = intElement.ToString().Length != 0 ? intElement.ToString().Length + intElement.ToString() : "-";
-                    }
-                    else if (value is string stringElement) 
+                    if (value is string stringElement) 
                     {
                         currentValue = stringElement.Length != 0 ? stringElement.Length.ToString() + stringElement : "-"; ;
                     }
@@ -92,7 +83,7 @@ namespace Diploma.Data.Models
             return concatedKeysBuilder.ToString();
         }
 
-        public string CalculatePSign(IDictionary<string, object> model)
+        public string CalculatePSign(IDictionary<string, string> model)
         {
             string concatedKeys = ConcatData(model);
             byte[] concatedKeysBytes = Encoding.UTF8.GetBytes(concatedKeys);
@@ -110,16 +101,16 @@ namespace Diploma.Data.Models
         /// </summary>
         /// <param name="model">Модель, пришедшая извне (от ТАЧ)</param>
         /// <returns>Готовая к отправке в банк модель</returns>
-        protected IDictionary<string, object> PrepareSendingData(IDictionary<string, object> model)//дальше здесь будет обработка файла ТАЧ
+        protected IDictionary<string, string> PrepareSendingData(IDictionary<string, object?> model)//дальше здесь будет обработка файла ТАЧ
         {
-            var newModel = new Dictionary<string, object>();
+            var newModel = new Dictionary<string, string>();
 
             foreach (var key in RequestKeys)
             {
                 model.TryGetValue(key, out object? value);
-                if (value is not null)
+                if (value is not null && value is JsonElement jsonElement)
                 {
-                    newModel[key] = value;
+                    newModel[key] = jsonElement.GetRawText().Replace("\"", string.Empty);
                 }
                 else
                 {
@@ -127,16 +118,16 @@ namespace Diploma.Data.Models
                 }
             }
 
-            newModel["TRTYPE"] = (int)trType;
+            newModel["TRTYPE"] = ((int)trType).ToString();
             return newModel;
         }
 
-        protected virtual void ChangeChildMembers(IDictionary<string, object> model)
+        protected virtual void ChangeChildMembers(IDictionary<string, string> model)
         {
 
         }
 
-        public IDictionary<string, object> SetRequestingModel(IDictionary<string, object> model)
+        public IDictionary<string, string> SetRequestingModel(IDictionary<string, object?> model)
         {
             var sendingModel = PrepareSendingData(model);
             ChangeChildMembers(sendingModel);

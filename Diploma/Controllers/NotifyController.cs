@@ -3,8 +3,6 @@ using Diploma.Data.Interfaces;
 using Diploma.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
-using System.Collections.Specialized;
-using System.Reflection;
 
 namespace Diploma.Controllers
 {
@@ -12,13 +10,13 @@ namespace Diploma.Controllers
     {
         private bool isSuccess = false;
 
-        private IRequestingBank? GetCurrentOperation(TrType trType)
+        private static IRequestingBank? GetCurrentOperation(TrType trType)
         {
             switch (trType)
             {
                 case TrType.Pay:
                     return new Payment();
-               case TrType.Abort:
+                case TrType.Abort:
                     return new Abort();
                 case TrType.Return:
                     return new Return();
@@ -28,7 +26,7 @@ namespace Diploma.Controllers
                     return new EndOfCalculation();
                     //остальные кейсы доработать
             }
-            return null;
+            throw new Exception("Нет нужной операции");
         }
 
         private IDictionary<string, object> GetReceivedModel(IFormCollection receivedModel)
@@ -50,24 +48,24 @@ namespace Diploma.Controllers
             return newModel;
         }
 
-        [HttpPost]
-        public void Index()
-        {
-            var bankPsign = Request.Form["P_SIGN"];
-            var trTypeString = Request.Form["TRTYPE"];
-            int.TryParse(trTypeString.ToString(), out int result);
-            TrType trType = (TrType)result;
+        //[HttpPost]
+        //public void Index()
+        //{
+        //    var bankPsign = HttpContext.Request.Form["P_SIGN"];
+        //    var trTypeString = HttpContext.Request.Form["TRTYPE"];
+        //    int.TryParse(trTypeString.ToString(), out int result);
+        //    TrType trType = (TrType)result;
 
-            var operation = GetCurrentOperation(trType);
-            string modulePsign = string.Empty;
-            if (operation is not null) 
-            {
-                modulePsign = operation.CalculatePSign(GetReceivedModel(Request.Form));
-            }
+        //    var operation = GetCurrentOperation(trType);
+        //    string modulePsign = string.Empty;
+        //    if (operation is not null) 
+        //    {
+        //        modulePsign = operation.CalculatePSign(GetReceivedModel(Request.Form));
+        //    }
 
-            isSuccess = modulePsign == bankPsign;
+        //    isSuccess = modulePsign == bankPsign;
             
-        }
+        //}
 
         public string CheckStatus()
         {
