@@ -89,7 +89,7 @@ namespace Diploma.Data.Models
             byte[] concatedKeysBytes = Encoding.UTF8.GetBytes(concatedKeys);
             byte[] pSignBytes;
 
-            using (var encoder = new HMACSHA256(BankEnviroment.secretKey))
+            using (var encoder = new HMACSHA256(BankEnvironment.secretKey))
             {
                 pSignBytes = encoder.ComputeHash(concatedKeysBytes);
             }
@@ -122,15 +122,9 @@ namespace Diploma.Data.Models
             return newModel;
         }
 
-        protected virtual void ChangeChildMembers(IDictionary<string, string> model)
-        {
-
-        }
-
         public IDictionary<string, string> SetRequestingModel(IDictionary<string, object?> model)
         {
             var sendingModel = PrepareSendingData(model);
-            ChangeChildMembers(sendingModel);
             string pSign = CalculatePSign(sendingModel);
             sendingModel["P_SIGN"] = pSign;
             return sendingModel;
