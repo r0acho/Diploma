@@ -1,8 +1,8 @@
 ﻿namespace Diploma.Data.Interfaces
 {
-    public interface IRequestingBank
+    public interface IBankOperations
     {
-        string CalculatePSign(IDictionary<string, string> model);
+        string CalculatePSignOfModel(Dictionary<string, string> model);
         IDictionary<string, string> SetRequestingModel(IDictionary<string, object?> model);
     }
 }

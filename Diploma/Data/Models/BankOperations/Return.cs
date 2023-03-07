@@ -1,11 +1,11 @@
 ﻿using Diploma.Data.Enums;
 using Diploma.Data.Interfaces;
 
-namespace Diploma.Data.Models
+namespace Diploma.Data.Models.BankOperations
 {
-    public class Return : Payment, IRequestingBank
+    public class Return : Payment
     {
-        protected override TrType trType { get; } = TrType.Return;
+        protected override TrType OperationType { get; } = TrType.Return;
 
         protected override List<string> RequestKeys { get; init; } = new List<string>()
         {

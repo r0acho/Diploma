@@ -1,6 +1,6 @@
 ﻿using Diploma.Data.Interfaces;
+using Diploma.Data.Models.BankOperations;
 using Diploma.Data.Models;
-using Diploma.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -25,7 +25,7 @@ namespace Diploma.Controllers
             return View();
         }
 
-        public IDictionary<string, string> PrepareModel (IRequestingBank operation, IDictionary<string, object?> model)
+        public IDictionary<string, string> PrepareModel (IBankOperations operation, IDictionary<string, object?> model)
         {
             return operation.SetRequestingModel(model);
         }
@@ -63,6 +63,21 @@ namespace Diploma.Controllers
         public IActionResult EndOfCalculation()
         {
             return View(viewName: "SendForm", model: PrepareModel(new EndOfCalculation(), Payment.GetTestModel()));
+        }
+        
+        public IActionResult CheckCard()
+        {
+            return View(viewName: "SendForm", model: PrepareModel(new CheckCard(), Payment.GetTestModel()));
+        }
+        
+        public IActionResult RegRecurring()
+        {
+            return View(viewName: "SendForm", model: PrepareModel(new ReccuringRegistrarion(), Payment.GetTestModel()));
+        }
+        
+        public IActionResult ExeRecurring()
+        {
+            return View(viewName: "SendForm", model: PrepareModel(new ReccuringExecution(), Payment.GetTestModel()));
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

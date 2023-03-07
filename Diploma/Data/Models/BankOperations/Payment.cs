@@ -4,21 +4,23 @@ using System.Dynamic;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace Diploma.Data.Models
+namespace Diploma.Data.Models.BankOperations
 {
 
 
     /// <summary>
     /// Класс для хранения полей, необходимых для оплаты транзакции в ПСБ
     /// </summary>
-    public class Payment : IRequestingBank
+    public class Payment : IBankOperations
     {
         /// <summary>
         /// Тип банковой операции
         /// </summary>
-        protected virtual TrType trType { get; } = TrType.Pay;
+        protected virtual TrType OperationType { get; } = TrType.Pay;
+
+        protected Dictionary<string, string> _model = new();
+        
         /// <summary>
         /// JSON для тестовой модели
         /// </summary>
@@ -34,11 +36,12 @@ namespace Diploma.Data.Models
             /*поля для теста возврата*/
             $"\"org_amount\": 300.2, \r\n \"rrn\": \"911491440337\", \r\n \"int_ref\": \"1ED52C3B234CBAF8\"}}";
 
+        
         /// <summary>
         /// Поля, которые нужно отправить для проведения транзакции
         /// </summary>
         protected virtual List<string> RequestKeys { get; init; } = new List<string> {
-            "AMOUNT", "CURRENCY", "ORDER", "DESC", "TERMINAL", "TRTYPE","MERCH_NAME",
+            "AMOUNT", "CURRENCY", "ORDER", "DESC", "TERMINAL", "TRTYPE", "MERCH_NAME",
             "MERCHANT","EMAIL", "TIMESTAMP","NONCE","BACKREF","NOTIFY_URL"
         };
 
@@ -59,12 +62,13 @@ namespace Diploma.Data.Models
             return JsonSerializer.Deserialize<ExpandoObject>(testJson)!;
         }
 
-        public string ConcatData(IDictionary<string, string> model)
+        
+        private string ConcatData()
         {
             var concatedKeysBuilder = new StringBuilder();
             foreach (var key in PSignOrder)
             {
-                model.TryGetValue(key, out var value);
+                _model.TryGetValue(key, out var value);
                 if (value is not null)
                 {
                     string currentValue = string.Empty;
@@ -83,9 +87,15 @@ namespace Diploma.Data.Models
             return concatedKeysBuilder.ToString();
         }
 
-        public string CalculatePSign(IDictionary<string, string> model)
+
+        public string CalculatePSignOfModel(Dictionary<string, string> model)
         {
-            string concatedKeys = ConcatData(model);
+            _model = model;
+            return CalculatePSign();
+        }
+        private string CalculatePSign()
+        {
+            string concatedKeys = ConcatData();
             byte[] concatedKeysBytes = Encoding.UTF8.GetBytes(concatedKeys);
             byte[] pSignBytes;
 
@@ -101,36 +111,41 @@ namespace Diploma.Data.Models
         /// </summary>
         /// <param name="model">Модель, пришедшая извне (от ТАЧ)</param>
         /// <returns>Готовая к отправке в банк модель</returns>
-        protected IDictionary<string, string> PrepareSendingData(IDictionary<string, object?> model)//дальше здесь будет обработка файла ТАЧ
+        private void SetSendingData(IDictionary<string, object?> model)//дальше здесь будет обработка файла ТАЧ
         {
-            var newModel = new Dictionary<string, string>();
-
             foreach (var key in RequestKeys)
             {
                 model.TryGetValue(key, out object? value);
                 if (value is not null && value is JsonElement jsonElement)
                 {
-                    newModel[key] = jsonElement.GetRawText().Replace("\"", string.Empty);
+                    _model[key] = jsonElement.GetRawText().Replace("\"", string.Empty);
                 }
                 else
                 {
-                    newModel[key] = string.Empty;
+                    _model[key] = string.Empty;
                 }
             }
 
-            newModel["TRTYPE"] = ((int)trType).ToString();
-            return newModel;
+            _model["TRTYPE"] = ((int)OperationType).ToString();
         }
 
+        /// <summary>
+        /// Метод для определения необходимых полей в дочерних операциях банка
+        /// </summary>
+        protected virtual void ChangeModelFieldsByInheritMembers()
+        {
+            
+        }
+        
         public IDictionary<string, string> SetRequestingModel(IDictionary<string, object?> model)
         {
-            var sendingModel = PrepareSendingData(model);
-            string pSign = CalculatePSign(sendingModel);
-            sendingModel["P_SIGN"] = pSign;
-            return sendingModel;
+            SetSendingData(model);
+            ChangeModelFieldsByInheritMembers();
+            _model["BACKREF"] = "http://176.214.127.66:52112/"; //захардкоженный IP-адрес модуля, видимого в интернете
+            _model["NOTIFY_URL"] = $"{_model["BACKREF"]}/notify/";
+            _model["P_SIGN"] = CalculatePSign();
+            return _model;
         }
-
     }
-
-
+    
 }

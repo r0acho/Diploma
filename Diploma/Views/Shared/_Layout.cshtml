@@ -34,16 +34,30 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="EndOfCalculation">Завершение расчетов</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="CheckCard">Проверка карты</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="RegRecurring">Регистрация рекурретного платежа</a>
+                        </li> 
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="ExeRecurring">Проведение рекурретного платежа</a>
+                        </li>                           
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+<div class="container">
+    <ul>
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Notify" asp-action="CheckStatus">Проверить успех последней операции</a>
+            </li>
+    </ul>
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
 
     <footer class="border-top footer text-muted">
     </footer>

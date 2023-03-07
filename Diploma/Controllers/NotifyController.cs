@@ -1,9 +1,7 @@
-﻿using System.Numerics;
-using Diploma.Data.Enums;
+﻿using Diploma.Data.Enums;
 using Diploma.Data.Interfaces;
-using Diploma.Data.Models;
+using Diploma.Data.Models.BankOperations;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
 
 namespace Diploma.Controllers
 {
@@ -12,7 +10,7 @@ namespace Diploma.Controllers
         //private static bool _isSuccess = false;
         private static string? _textMessageAboutLastOperation;
 
-        private static IRequestingBank GetCurrentOperation(TrType trType)
+        private static IBankOperations GetCurrentOperation(TrType trType)
         {
             return trType switch
             {
@@ -25,7 +23,7 @@ namespace Diploma.Controllers
             };
         }
 
-        private static IDictionary<string, string> GetReceivedModel(IFormCollection receivedModel)
+        private static Dictionary<string, string> GetReceivedModel(IFormCollection receivedModel)
         {
             var newModel = new Dictionary<string, string>();
 
@@ -44,7 +42,7 @@ namespace Diploma.Controllers
             int.TryParse(trTypeString.ToString(), out int result);
             var trType = (TrType)result;
             var operation = GetCurrentOperation(trType);
-            string modulePSign = operation.CalculatePSign(GetReceivedModel(Request.Form));
+            string modulePSign = operation.CalculatePSignOfModel(GetReceivedModel(Request.Form));
 
             _textMessageAboutLastOperation = modulePSign == bankPSign ? "Операция успешна" : "Операция НЕ успешна";
         }
