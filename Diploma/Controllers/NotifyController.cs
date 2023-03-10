@@ -19,6 +19,8 @@ namespace Diploma.Controllers
                 TrType.Return => new Return(),
                 TrType.PreAuthorization => new PreAuthorization(),
                 TrType.EndOfCalculation => new EndOfCalculation(),
+                TrType.Reccuring => new ReccuringExecution(),
+                TrType.CheckCard => new CheckCard(),
                 _ => throw new Exception("Нет нужной операции")
             };
         }
@@ -34,6 +36,7 @@ namespace Diploma.Controllers
             return newModel;
         }
 
+        //сделать обработку ответов банка в отдельном модуле?
         [HttpPost]
         public void Index()
         {
@@ -45,6 +48,7 @@ namespace Diploma.Controllers
             string modulePSign = operation.CalculatePSignOfModel(GetReceivedModel(Request.Form));
 
             _textMessageAboutLastOperation = modulePSign == bankPSign ? "Операция успешна" : "Операция НЕ успешна";
+            HttpContext.Response.WriteAsync(_textMessageAboutLastOperation);
         }
 
         public string CheckStatus()
