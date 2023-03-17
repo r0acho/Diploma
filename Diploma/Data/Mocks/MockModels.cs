@@ -6,7 +6,7 @@ public class MockModels
     /// JSON для тестовой модели
     /// </summary>
     public static string testJson = $"{{\r\n  \"AMOUNT\": 300.2,\r\n  " +
-                                       $"\"CURRENCY\": \"RUB\",\r\n  \"ORDER\": \"{Random.Shared.Next(10000000, 90000000)}\",\r\n " +
+                                       $"\"CURRENCY\": \"RUB\",\r\n  \"ORDER\": \"911491440337\",\r\n " +
                                        $" \"DESC\": \"Test Payment\",\r\n  \"TERMINAL\": \"79036777\",\r\n  " +
                                        $"\"TRTYPE\": 1,\r\n  \"MERCH_NAME\": \"Test Shop\",\r\n  \"MERCHANT\": " +
                                        $"\"000599979036777\",\r\n  \"EMAIL\": \"cardholder@mail.test\",\r\n  " +

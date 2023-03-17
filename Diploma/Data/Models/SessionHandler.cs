@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using Diploma.Data.Enums;
 using Diploma.Data.Interfaces;
 using Diploma.Data.Models.BankOperations;
+using Diploma.Domain.Entities;
 
 namespace Diploma.Data.Models;
 
@@ -10,7 +11,7 @@ public class SessionHandler : IBankOperationHandler
     private const decimal COST_OF_ONE_KWH = 16;
     private IBankOperations? _bankOperation;
     
-    public readonly ObservableCollection<RequestOperationModel> Operations = new();
+    public readonly ObservableCollection<BankOperation> Operations = new();
     
     public int OperationId { get; }
 
@@ -45,7 +46,7 @@ public class SessionHandler : IBankOperationHandler
     {
 
         double a = long.MaxValue;
-        RequestOperationModel currentOperation;
+        BankOperation currentOperation;
         Operations.CollectionChanged += 
             delegate(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)                    
             {
