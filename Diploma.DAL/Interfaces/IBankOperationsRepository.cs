@@ -4,5 +4,4 @@ namespace Diploma.DAL.Interfaces;
 
 public interface IBankOperationsRepository : IBaseRepository<BankOperation>
 {
-    
 }

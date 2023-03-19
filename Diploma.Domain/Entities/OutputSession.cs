@@ -10,5 +10,4 @@ public class SessionResponse : BaseResponse
     public string? CardNumber { get; set; }
     public decimal Difference { get; set; }
     public string? TextResponse { get; set; }
-    
 }

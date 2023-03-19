@@ -5,15 +5,15 @@ namespace Diploma.DAL.Implementations;
 
 public class BankOperationsRepository : IBankOperationsRepository
 {
-    
     private readonly List<BankOperation> _bankOperations = new();
-    public ulong SessionId { get; }
 
     public BankOperationsRepository(ulong sessionId)
     {
         SessionId = sessionId;
     }
-    
+
+    public ulong SessionId { get; }
+
     public bool Create(BankOperation entity)
     {
         _bankOperations.Add(entity);
@@ -24,5 +24,4 @@ public class BankOperationsRepository : IBankOperationsRepository
     {
         return _bankOperations[id];
     }
-    
 }

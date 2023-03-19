@@ -4,6 +4,21 @@ namespace Diploma.Domain.Entities;
 
 public class BankOperation
 {
+    public BankOperation(IDictionary<string, string> inputModel)
+    {
+        //возможно падение в runtime при вызове ToString()
+        WillSessionContinue = Convert.ToBoolean(inputModel["Сессия продолжается?"]);
+        OperationType = (OperationType)Convert.ToInt32(inputModel["Тип операции"]);
+        Amount = Convert.ToDecimal(inputModel["Сумма платежа, Р"]);
+        Order = Convert.ToUInt64(inputModel["Внутренний идентификатор платежа"]);
+        Description = inputModel["Описание платежа"] ?? string.Empty;
+        MerchantName = inputModel["Компания-владелец станции"] ?? string.Empty;
+        ClientEmail = inputModel["Email клиента"] ?? string.Empty;
+        MerchantEmail = inputModel["Email владельца станции"] ?? string.Empty;
+        SessionId = Convert.ToUInt64(inputModel["Идентификатор резерва или зарядной сессии"]);
+        ClientPhoneNumber = inputModel["Телефон клиента"] ?? string.Empty;
+    }
+
     public decimal Amount { get; }
     public bool WillSessionContinue { get; }
     public OperationType OperationType { get; }
@@ -14,21 +29,4 @@ public class BankOperation
     public string MerchantEmail { get; }
     public ulong SessionId { get; }
     public string ClientPhoneNumber { get; }
-    
-
-    public BankOperation(IDictionary<string, string> inputModel)
-    {
-        //возможно падение в runtime при вызове ToString()
-        WillSessionContinue = Convert.ToBoolean(inputModel["Сессия продолжается?"]);
-        OperationType = (OperationType)Convert.ToInt32(inputModel["Тип операции"]);
-        Amount = Convert.ToDecimal(inputModel["Сумма платежа, Р"]);
-        Order = Convert.ToUInt64(inputModel["Внутренний идентификатор платежа"]);
-        Description = inputModel["Описание платежа"].ToString() ?? string.Empty;
-        MerchantName = inputModel["Компания-владелец станции"].ToString() ?? string.Empty;
-        ClientEmail = inputModel["Email клиента"].ToString() ?? string.Empty;
-        MerchantEmail = inputModel["Email владельца станции"].ToString() ?? string.Empty;
-        SessionId = Convert.ToUInt64(inputModel["Идентификатор резерва или зарядной сессии"]);
-        ClientPhoneNumber = inputModel["Телефон клиента"].ToString() ?? string.Empty;
-    }
-        
 }

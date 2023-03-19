@@ -6,5 +6,4 @@ public interface IBaseRepository<T>
     bool Create(T entity);
 
     T Get(int id);
-    
 }

@@ -1,10 +1,8 @@
 ﻿using Diploma.Service.Enums;
 
+namespace Diploma.Service.Implementations.BankOperations;
 
-namespace Diploma.Service.Implementations.BankOperations
+public class Abort : Return
 {
-    public class Abort : Return
-    {
-        protected override TrType OperationType { get; } = TrType.Abort;
-    }
+    protected override TrType OperationType { get; } = TrType.Abort;
 }
