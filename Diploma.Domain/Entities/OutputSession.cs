@@ -2,7 +2,7 @@ using Diploma.Domain.Response;
 
 namespace Diploma.Domain.Entities;
 
-public record SessionResponse : BaseResponse
+public class SessionResponse : BaseResponse
 {
     public decimal OfdAmount { get; set; }
     public decimal BankAmount { get; set; }

@@ -1,11 +1,12 @@
-﻿@model IDictionary<string, string>
+﻿@using Diploma.Service.Implementations
+@model IDictionary<string, string>
 @{
     ViewData["Title"] = "Операция банка";
 }
 <h1>@ViewData["Title"]</h1>
 
 
-<form id='payment_form' action="@BankEnvironment.bankUrl" method = "POST">
+<form id='payment_form' action="@BankEnvironment.BankUrl" method = "POST">
 @foreach (var item in Model)
 {
         <input type='hidden' name='@item.Key.ToUpper()' value='@item.Value' />

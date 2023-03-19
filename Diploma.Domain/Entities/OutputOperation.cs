@@ -1,6 +1,8 @@
+using Diploma.Domain.Response;
+
 namespace Diploma.Domain.Entities;
 
-public class OutputOperation
+public class OutputOperation : BaseResponse
 {
     
 }

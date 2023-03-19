@@ -16,13 +16,13 @@ public class BankOperation
     public string ClientPhoneNumber { get; }
     
 
-    public BankOperation(IDictionary<string?, object> inputModel)
+    public BankOperation(IDictionary<string, string> inputModel)
     {
         //возможно падение в runtime при вызове ToString()
         WillSessionContinue = Convert.ToBoolean(inputModel["Сессия продолжается?"]);
         OperationType = (OperationType)Convert.ToInt32(inputModel["Тип операции"]);
         Amount = Convert.ToDecimal(inputModel["Сумма платежа, Р"]);
-        Order = Convert.ToUInt64("Внутренний идентификатор платежа");
+        Order = Convert.ToUInt64(inputModel["Внутренний идентификатор платежа"]);
         Description = inputModel["Описание платежа"].ToString() ?? string.Empty;
         MerchantName = inputModel["Компания-владелец станции"].ToString() ?? string.Empty;
         ClientEmail = inputModel["Email клиента"].ToString() ?? string.Empty;

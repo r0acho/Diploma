@@ -1,9 +1,9 @@
-using Diploma.Data.Enums;
-using Diploma.Data.Interfaces;
+using Diploma.Service.Enums;
+using Diploma.Service.Interfaces;
 
-namespace Diploma.Data.Models.BankOperations
+namespace Diploma.Service.Implementations.BankOperations
 {
-    public class ReccuringExecution : Payment
+    public class ReccuringRegistrarion : Payment
     {
         protected override TrType OperationType { get; } = TrType.Reccuring;
 

@@ -1,8 +1,11 @@
-﻿using Diploma.Data.Interfaces;
-using Diploma.Data.Models.BankOperations;
-using Diploma.Data.Models;
+﻿using Diploma.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Dynamic;
+using System.Text.Json;
+using Diploma.Service.Implementations.BankOperations;
+using Diploma.Service.Interfaces;
+using Diploma.Data.Mocks;
 
 namespace Diploma.Controllers
 {
@@ -25,7 +28,7 @@ namespace Diploma.Controllers
             return View();
         }
 
-        public IDictionary<string, string> PrepareModel (IBankOperations operation, IDictionary<string, object?> model)
+        public IDictionary<string, string> PrepareModel (IBankOperationService operation, IDictionary<string, object?> model)
         {
             return operation.SetRequestingModel(model);
         }
@@ -40,44 +43,59 @@ namespace Diploma.Controllers
             return View(model); 
         }
 
+        /*[HttpPost]
+        public IActionResult StartPayment()
+        {
+            HttpContext.Request.
+        }*/
+
+        /// <summary>
+        /// тестовый метод, удалим
+        /// </summary>
+        /// <returns></returns>
+        private IDictionary<string, object?> GetTestModel()
+        {
+            return JsonSerializer.Deserialize<ExpandoObject>(MockModels.testJson)!;
+        }
+
         public IActionResult Pay()
         {
-            return View(viewName: "SendForm", model: PrepareModel(new Payment(), Payment.GetTestModel()));
+            return View(viewName: "SendForm", model: PrepareModel(new Payment(), GetTestModel()));
         }
 
         public IActionResult PreAuthorization()
         {
-            return View(viewName: "SendForm", model: PrepareModel(new PreAuthorization(), Payment.GetTestModel()));
+            return View(viewName: "SendForm", model: PrepareModel(new PreAuthorization(), GetTestModel()));
         }
 
         public IActionResult Return()
         {
-            return View(viewName: "SendForm", model: PrepareModel(new Return(), Payment.GetTestModel()));
+            return View(viewName: "SendForm", model: PrepareModel(new Return(), GetTestModel()));
         }
 
         public IActionResult Abort()
         {
-            return View(viewName: "SendForm", model: PrepareModel(new Abort(), Payment.GetTestModel()));
+            return View(viewName: "SendForm", model: PrepareModel(new Abort(), GetTestModel()));
         }
 
         public IActionResult EndOfCalculation()
         {
-            return View(viewName: "SendForm", model: PrepareModel(new EndOfCalculation(), Payment.GetTestModel()));
+            return View(viewName: "SendForm", model: PrepareModel(new EndOfCalculation(), GetTestModel()));
         }
         
         public IActionResult CheckCard()
         {
-            return View(viewName: "SendForm", model: PrepareModel(new CheckCard(), Payment.GetTestModel()));
+            return View(viewName: "SendForm", model: PrepareModel(new CheckCard(), GetTestModel()));
         }
         
         public IActionResult RegRecurring()
         {
-            return View(viewName: "SendForm", model: PrepareModel(new ReccuringRegistrarion(), Payment.GetTestModel()));
+            return View(viewName: "SendForm", model: PrepareModel(new ReccuringRegistrarion(), GetTestModel()));
         }
         
         public IActionResult ExeRecurring()
         {
-            return View(viewName: "SendForm", model: PrepareModel(new ReccuringExecution(), Payment.GetTestModel()));
+            return View(viewName: "SendForm", model: PrepareModel(new ReccuringExecution(), GetTestModel()));
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -1,7 +1,4 @@
-﻿using Diploma.Data.Enums;
-using Diploma.Data.Interfaces;
-using Diploma.Data.Models.BankOperations;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Diploma.Controllers
 {
@@ -10,7 +7,7 @@ namespace Diploma.Controllers
         //private static bool _isSuccess = false;
         private static string? _textMessageAboutLastOperation;
 
-        private static IBankOperations GetCurrentOperation(TrType trType)
+        /*private static IBankOperations GetCurrentOperation(TrType trType)
         {
             return trType switch
             {
@@ -23,7 +20,7 @@ namespace Diploma.Controllers
                 TrType.CheckCard => new CheckCard(),
                 _ => throw new Exception("Нет нужной операции")
             };
-        }
+        }*/
 
         private static Dictionary<string, string> GetReceivedModel(IFormCollection receivedModel)
         {
@@ -37,7 +34,7 @@ namespace Diploma.Controllers
         }
 
         //сделать обработку ответов банка в отдельном модуле?
-        [HttpPost]
+        /*[HttpPost]
         public void Index()
         {
             var bankPSign = HttpContext.Request.Form["P_SIGN"];
@@ -49,7 +46,7 @@ namespace Diploma.Controllers
 
             _textMessageAboutLastOperation = modulePSign == bankPSign ? "Операция успешна" : "Операция НЕ успешна";
             HttpContext.Response.WriteAsync(_textMessageAboutLastOperation);
-        }
+        }*/
 
         public string CheckStatus()
         {

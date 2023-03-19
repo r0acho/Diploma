@@ -1,17 +1,18 @@
-﻿using Diploma.Data.Enums;
-using Diploma.Data.Interfaces;
-using System.Dynamic;
+﻿using System.Globalization;
+using Diploma.Service.Enums;
+using Diploma.Service.Interfaces;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using Diploma.Data.Mocks;
+using Diploma.Domain.Entities;
 
-namespace Diploma.Data.Models.BankOperations
+
+namespace Diploma.Service.Implementations.BankOperations
 {
     /// <summary>
     /// Класс для хранения полей, необходимых для оплаты транзакции в ПСБ
     /// </summary>
-    public class Payment : IBankOperations
+    public class Payment : IBankOperationService
     {
         /// <summary>
         /// Тип банковой операции
@@ -39,14 +40,14 @@ namespace Diploma.Data.Models.BankOperations
             "TERMINAL", "EMAIL", "TRTYPE", "TIMESTAMP", "NONCE", "BACKREF"
         };
 
-        /// <summary>
+        /*/// <summary>
         /// Метод, возвращающий тестовую модель
         /// </summary>
         /// <returns>Словарь {string: JsonObject}</returns>
         public static IDictionary<string, object?> GetTestModel()
         {
             return JsonSerializer.Deserialize<ExpandoObject>(MockModels.testJson)!;
-        }
+        }*/
         
         private string ConcatData()
         {
@@ -59,7 +60,7 @@ namespace Diploma.Data.Models.BankOperations
                     string currentValue = string.Empty;
                     if (value is string stringElement) 
                     {
-                        currentValue = stringElement.Length != 0 ? stringElement.Length.ToString() + stringElement : "-"; ;
+                        currentValue = stringElement.Length != 0 ? stringElement.Length + stringElement : "-"; ;
                     }
                     concatedKeysBuilder.Append(currentValue);
                 }
@@ -128,6 +129,38 @@ namespace Diploma.Data.Models.BankOperations
             ChangeModelFieldsByInheritMembers();
             _model["BACKREF"] = "http://176.214.127.66:52112"; //захардкоженный IP-адрес модуля, видимого в интернете
             _model["NOTIFY_URL"] = $"{_model["BACKREF"]}/notify";
+            _model["P_SIGN"] = CalculatePSign();
+            return _model;
+        }
+
+        private string GetRandomHexString(int length = 32)
+        {
+            using var csprng = RandomNumberGenerator.Create();
+            var bytes = new byte[length];
+
+            csprng.GetNonZeroBytes(bytes);
+            return Convert.ToHexString(bytes);
+        }
+        
+        public IDictionary<string, string> SetRequestingModel(BankOperation model)
+        {
+            _model["AMOUNT"] = model.Amount.ToString(CultureInfo.CurrentCulture);
+            _model["CURRENCY"] = "RUB";
+            _model["ORDER"] = model.Order.ToString();
+            _model["DESC"] = model.Description;
+            _model["TERMINAL"] = "79036777"; // номер терминала, нужно уточнить
+            _model["TRTYPE"] = ((int)OperationType).ToString();
+            _model["MERCH_NAME"] = model.MerchantName;
+            _model["MERCHANT"] = "000599979036777"; //номер тсп, присвоенный банком, нужно уточнить
+            _model["EMAIL"] = model.ClientEmail;
+            _model["TIMESTAMP"] = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+            _model["NONCE"] = GetRandomHexString();
+            _model["BACKREF"] = "http://176.214.127.66:52112"; //захардкоженный IP-адрес модуля, видимого в интернете
+            _model["NOTIFY_URL"] = $"{_model["BACKREF"]}/notify";
+            _model["CARDHOLDER_NOTIFY"] = "EMAIL";
+            _model["MERCHANT_NOTIFY"] = "EMAIL";
+            _model["MERCHANT_NOTIFY_EMAIL"] = model.MerchantEmail;
+            ChangeModelFieldsByInheritMembers();
             _model["P_SIGN"] = CalculatePSign();
             return _model;
         }

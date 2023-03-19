@@ -1,3 +1,6 @@
+using Diploma.Service.Implementations;
+using Diploma.Service.Interfaces;
+
 namespace Diploma
 {
     public class Program
@@ -8,6 +11,7 @@ namespace Diploma
             
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<ISessionHandlerService, SessionHandlerService>();
             
             var app = builder.Build();
 
