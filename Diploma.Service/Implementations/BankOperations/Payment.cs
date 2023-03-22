@@ -35,5 +35,11 @@ public class Payment : BankOperationService
         "AMOUNT", "CURRENCY", "ORDER", "MERCH_NAME", "MERCHANT",
         "TERMINAL", "EMAIL", "TRTYPE", "TIMESTAMP", "NONCE", "BACKREF"
     };
-    
+
+    protected override void ChangeModelFieldsByInheritMembers()
+    {
+        SendingModel["MERCHANT_NOTIFY_EMAIL"] = CurrentBankOperation!.MerchantEmail!;
+        SendingModel["CARDHOLDER_NOTIFY"] = "EMAIL";
+        SendingModel["MERCHANT_NOTIFY"] = "EMAIL";
+    }
 }

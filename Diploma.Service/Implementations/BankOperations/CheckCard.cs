@@ -16,6 +16,6 @@ public class CheckCard : Payment
     /// </summary>
     protected override void ChangeModelFieldsByInheritMembers()
     {
-        _model["AMOUNT"] = "0";
+        SendingModel["AMOUNT"] = "0";
     }
 }

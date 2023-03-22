@@ -1,10 +1,13 @@
+using System.Collections.ObjectModel;
 using Diploma.Domain.Entities;
+using Diploma.Domain.Response;
 
 namespace Diploma.Service.Interfaces;
 
 public interface ISessionHandlerService
 {
-    bool CheckKeys(Dictionary<string, string> bankResponse);
-    Task<string> GetJsonResult();
-    Task<string> GetBankResponse(BankOperation bankOperation);
+    internal IBankOperationService BankOperationService { get; }
+    internal IAsyncEnumerable<BaseResponse> HandleSessionAsync();
+    public ObservableCollection<BankOperation> Operations { get; }
+
 }

@@ -2,9 +2,9 @@ using Diploma.Service.Enums;
 
 namespace Diploma.Service.Implementations.BankOperations;
 
-public class ReccuringRegistrarion : Payment
+public class RecurringRegistrarion : Payment
 {
-    protected override TrType OperationType { get; } = TrType.Reccuring;
+    protected override TrType OperationType { get; } = TrType.Recurring;
 
     protected override List<string> RequestKeys { get; init; } = new()
     {

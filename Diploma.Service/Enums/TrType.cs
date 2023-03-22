@@ -7,6 +7,6 @@ public enum TrType
     Pay = 1,
     EndOfCalculation = 21,
     Return = 14,
-    Reccuring = 171,
+    Recurring = 171,
     CheckCard = 39
 }
