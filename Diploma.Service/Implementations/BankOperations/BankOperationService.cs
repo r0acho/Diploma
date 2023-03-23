@@ -18,6 +18,8 @@ public abstract class BankOperationService : IBankOperationService
     protected Dictionary<string, string> SendingModel = new();
 
     protected BankOperation? CurrentBankOperation;
+    
+    protected IdnMapping Idn = new IdnMapping();
 
     /// <summary>
     ///     Тип банковой операции
@@ -44,9 +46,9 @@ public abstract class BankOperationService : IBankOperationService
     {
         SendingModel["AMOUNT"] = CurrentBankOperation!.Amount.ToString(CultureInfo.InvariantCulture);
         SendingModel["ORDER"] = CurrentBankOperation.Order.ToString();
-        SendingModel["DESC"] = CurrentBankOperation.Description!;
-        SendingModel["MERCH_NAME"] = CurrentBankOperation.MerchantName!;
-        SendingModel["EMAIL"] = CurrentBankOperation.ClientEmail!;
+        SendingModel["DESC"] = Idn.GetAscii(CurrentBankOperation.Description!);
+        SendingModel["MERCH_NAME"] = Idn.GetAscii(CurrentBankOperation.MerchantName!);
+        SendingModel["EMAIL"] = Idn.GetAscii(CurrentBankOperation.ClientEmail!);
         SendingModel["TERMINAL"] = CurrentBankOperation.TerminalId.ToString(); // номер терминала, нужно уточнить
         SendingModel["MERCHANT"] = CurrentBankOperation.MerchantId!; //номер тсп, присвоенный банком, нужно уточнить
     }

@@ -11,12 +11,16 @@
     <projectFile pubXmlPath="Diploma/Properties/PublishProfiles/test.pubxml">Diploma/Diploma.csproj</projectFile>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7aa06daf-9962-476e-ac03-7e46db0cd6dc" name="Changes" comment="сделан сервис по контролю сессии по ее ID;&#10;добавлена возможность добавлять новые запросы на фискализацию, группируя разные операции по ID сессии&#10;нужно починить  &quot;Access denied&quot;" />
+    <list default="true" id="7aa06daf-9962-476e-ac03-7e46db0cd6dc" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Diploma/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Diploma/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Diploma.Service/Implementations/BankOperations/BankOperationService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Service/Implementations/BankOperations/BankOperationService.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="ChangesViewManager" show_ignored="true" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -241,7 +245,8 @@
       <workItem from="1679397285550" duration="1365000" />
       <workItem from="1679406560644" duration="2412000" />
       <workItem from="1679489635267" duration="1092000" />
-      <workItem from="1679490750141" duration="18160000" />
+      <workItem from="1679490750141" duration="18478000" />
+      <workItem from="1679579478615" duration="2606000" />
     </task>
     <task id="LOCAL-00001" summary="набор ключей теперь свойство классов вместо поля">
       <created>1676762886907</created>
@@ -299,7 +304,14 @@
       <option name="project" value="LOCAL" />
       <updated>1679509482707</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Добавлены игнорируемые файлы (wut)">
+      <created>1679509711111</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1679509711111</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -345,7 +357,8 @@
     <MESSAGE value="добавлена генерация платежной ссылки по полученным данным для банковской операции, завершен процесс разделения приложения на слои" />
     <MESSAGE value="добавлен абстрактный класс, содержащий логику банковских операций. сделано наследование от абстрактного класса" />
     <MESSAGE value="сделан сервис по контролю сессии по ее ID;&#10;добавлена возможность добавлять новые запросы на фискализацию, группируя разные операции по ID сессии&#10;нужно починить  &quot;Access denied&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="сделан сервис по контролю сессии по ее ID;&#10;добавлена возможность добавлять новые запросы на фискализацию, группируя разные операции по ID сессии&#10;нужно починить  &quot;Access denied&quot;" />
+    <MESSAGE value="Добавлены игнорируемые файлы (wut)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Добавлены игнорируемые файлы (wut)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
