@@ -19,6 +19,10 @@ public class SessionsPoolHandlerService : ISessionsPoolHandlerService
         var responses = SessionHandlerServices[sessionId].StartRecurringPayment(operation);
         await foreach (var recurringOperationResponse in responses)
         {
+            if (recurringOperationResponse is SessionResponse)
+            {
+                SessionHandlerServices.Remove(operation.SessionId);
+            }
             yield return recurringOperationResponse;
         }
     }

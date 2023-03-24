@@ -11,19 +11,7 @@
     <projectFile pubXmlPath="Diploma/Properties/PublishProfiles/test.pubxml">Diploma/Diploma.csproj</projectFile>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7aa06daf-9962-476e-ac03-7e46db0cd6dc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Diploma.Service/Implementations/BankHttpClient.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Diploma.Service/Implementations/SessionHandlerServiceTest.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Diploma.Service/Interfaces/ISessionHandlerServiceTest.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Diploma/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Diploma/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Diploma.Application/Controllers/BankController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Application/Controllers/BankController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Diploma.Domain/Response/BaseResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Domain/Response/BaseResponse.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Diploma.Domain/Response/RecurOperationResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Domain/Response/RecurOperationResponse.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Diploma.Domain/Response/SessionResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Domain/Response/SessionResponse.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Diploma.Service/Implementations/SessionHandlerService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Service/Implementations/SessionHandlerService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Diploma.Service/Implementations/SessionsPoolHandlerService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Service/Implementations/SessionsPoolHandlerService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Diploma.Service/Interfaces/ISessionsPoolHandlerService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Service/Interfaces/ISessionsPoolHandlerService.cs" afterDir="false" />
-    </list>
+    <list default="true" id="7aa06daf-9962-476e-ac03-7e46db0cd6dc" name="Changes" comment="В ответ модуля добавлены поля описания, результаты сессии(успех/неудача), статус-кода." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -67,6 +55,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/baea74d7885b5f8d727f09283cbf4cbb8c68125e13f1f056fdb38ff43b5b6e/RandomNumberGenerator.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/bd1d5c50194fea68ff3559c160230b0ab50f5acf4ce3061bffd6d62958e2182/ExceptionDispatchInfo.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/e74356f198b598e97eaeea83e8b7b1f2bfe27c0a39fedf86bb7dc44827fbda/ActionMethodExecutor.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://D:/source/Diploma/Diploma.Application/Controllers/BankController.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -258,7 +247,7 @@
       <workItem from="1679489635267" duration="1092000" />
       <workItem from="1679490750141" duration="18478000" />
       <workItem from="1679579478615" duration="3376000" />
-      <workItem from="1679659903408" duration="10670000" />
+      <workItem from="1679659903408" duration="11051000" />
     </task>
     <task id="LOCAL-00001" summary="набор ключей теперь свойство классов вместо поля">
       <created>1676762886907</created>
@@ -330,7 +319,14 @@
       <option name="project" value="LOCAL" />
       <updated>1679582291693</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="В ответ модуля добавлены поля описания, результаты сессии(успех/неудача), статус-кода.">
+      <created>1679671226168</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1679671226168</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -378,26 +374,10 @@
     <MESSAGE value="сделан сервис по контролю сессии по ее ID;&#10;добавлена возможность добавлять новые запросы на фискализацию, группируя разные операции по ID сессии&#10;нужно починить  &quot;Access denied&quot;" />
     <MESSAGE value="Добавлены игнорируемые файлы (wut)" />
     <MESSAGE value="исправлена ошибка &quot;Access denied&quot;, все символы транслируются в ASCII" />
-    <option name="LAST_COMMIT_MESSAGE" value="исправлена ошибка &quot;Access denied&quot;, все символы транслируются в ASCII" />
+    <MESSAGE value="В ответ модуля добавлены поля описания, результаты сессии(успех/неудача), статус-кода." />
+    <option name="LAST_COMMIT_MESSAGE" value="В ответ модуля добавлены поля описания, результаты сессии(успех/неудача), статус-кода." />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Diploma.Service/Implementations/SessionHandlerServiceTest.cs</url>
-          <line>91</line>
-          <properties documentPath="D:\source\Diploma\Diploma.Service\Implementations\SessionHandlerServiceTest.cs" initialLine="91" containingFunctionPresentation="method 'ExecuteRecurringPaymentAsync'">
-            <startOffsets>
-              <option value="3534" />
-            </startOffsets>
-            <endOffsets>
-              <option value="3554" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="Type#System.Collections.Generic.KeyValuePair`2" memberName="Value" />
