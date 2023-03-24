@@ -18,13 +18,22 @@ public class BankController : ControllerBase
     }
 
     [HttpPost(Name = "StartRecurPayment")]
-    public async IAsyncEnumerable<BaseResponse> RecurPay()
+    public async IAsyncEnumerable<string> RecurPay()
     {
         RecurringBankOperation receivedData = JsonSerializer.Deserialize<RecurringBankOperation>(await Request.ReadFromJsonAsync<string>());
         var responses = _sessionsPoolHandlerService.AddNewBankOperationAsync(receivedData);
         await foreach (var response in responses)
         {
-            yield return response;
+            if (response is SessionResponse sessionResponse)
+            {
+                yield return JsonSerializer.Serialize(sessionResponse);
+            }
+
+            if (response is RecurOperationResponse recurOperationResponse)
+            {
+                yield return JsonSerializer.Serialize(recurOperationResponse);
+            }
+            yield return JsonSerializer.Serialize(response);
         }
     }
 }

@@ -11,7 +11,10 @@
     <projectFile pubXmlPath="Diploma/Properties/PublishProfiles/test.pubxml">Diploma/Diploma.csproj</projectFile>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7aa06daf-9962-476e-ac03-7e46db0cd6dc" name="Changes" comment="В ответ модуля добавлены поля описания, результаты сессии(успех/неудача), статус-кода." />
+    <list default="true" id="7aa06daf-9962-476e-ac03-7e46db0cd6dc" name="Changes" comment="Подчищаем память за завершенными сессиями">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Diploma/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Diploma/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Diploma.Application/Controllers/BankController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Application/Controllers/BankController.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -29,7 +32,7 @@
     <option name="PREVIEW_PUSH_PROTECTED_ONLY" value="true" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="Fix" />
       </map>
     </option>
   </component>
@@ -49,6 +52,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/73f58a70a76e491eb4bcf9d90ef5628b378a8/_8ad91/HttpStatusCode.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7641a1a0695522e81971758464776ba68659afdcd53575f6917f7593181d9345/Dictionary.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/76e52ee0aa2289623857d2be7e8e3f1ab35940313b65f033124abe80e3439/ManualResetValueTaskSourceCore.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/816dbaba8a29ece3dd3dc326642858d27d2d19142f9a2109bb04617985ec9/ExecutionContext.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/82b7507b229cf2565fd18e9e5272d70c13bac2148452d034d6b3d88d662/ObjectMethodExecutor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/b1455a1b8a078d2fb2b94ca6b592e4fdf565fda99c679e809d992e9270/ValueTask.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/b2bd5f22cb4f19b992f1072954ceca92e9f7d5afde5f2773cc62a7d744648fe/UInt64.cs" root0="SKIP_HIGHLIGHTING" />
@@ -56,6 +60,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/bd1d5c50194fea68ff3559c160230b0ab50f5acf4ce3061bffd6d62958e2182/ExceptionDispatchInfo.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/e74356f198b598e97eaeea83e8b7b1f2bfe27c0a39fedf86bb7dc44827fbda/ActionMethodExecutor.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="mock://D:/source/Diploma/Diploma.Application/Controllers/BankController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://D:/source/Diploma/Diploma.Service/Implementations/SessionsPoolHandlerService.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -247,7 +252,7 @@
       <workItem from="1679489635267" duration="1092000" />
       <workItem from="1679490750141" duration="18478000" />
       <workItem from="1679579478615" duration="3376000" />
-      <workItem from="1679659903408" duration="11051000" />
+      <workItem from="1679659903408" duration="13293000" />
     </task>
     <task id="LOCAL-00001" summary="набор ключей теперь свойство классов вместо поля">
       <created>1676762886907</created>
@@ -326,7 +331,14 @@
       <option name="project" value="LOCAL" />
       <updated>1679671226168</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Подчищаем память за завершенными сессиями">
+      <created>1679671596009</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1679671596009</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -375,7 +387,8 @@
     <MESSAGE value="Добавлены игнорируемые файлы (wut)" />
     <MESSAGE value="исправлена ошибка &quot;Access denied&quot;, все символы транслируются в ASCII" />
     <MESSAGE value="В ответ модуля добавлены поля описания, результаты сессии(успех/неудача), статус-кода." />
-    <option name="LAST_COMMIT_MESSAGE" value="В ответ модуля добавлены поля описания, результаты сессии(успех/неудача), статус-кода." />
+    <MESSAGE value="Подчищаем память за завершенными сессиями" />
+    <option name="LAST_COMMIT_MESSAGE" value="Подчищаем память за завершенными сессиями" />
   </component>
   <component name="XDebuggerManager">
     <pin-to-top-manager>
