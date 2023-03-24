@@ -12,8 +12,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7aa06daf-9962-476e-ac03-7e46db0cd6dc" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Diploma.Service/Implementations/BankHttpClient.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Diploma.Service/Implementations/SessionHandlerServiceTest.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Diploma.Service/Interfaces/ISessionHandlerServiceTest.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Diploma/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Diploma/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Diploma.Service/Implementations/BankOperations/BankOperationService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Service/Implementations/BankOperations/BankOperationService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Diploma.Application/Controllers/BankController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Application/Controllers/BankController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Diploma.Domain/Response/BaseResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Domain/Response/BaseResponse.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Diploma.Domain/Response/RecurOperationResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Domain/Response/RecurOperationResponse.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Diploma.Domain/Response/SessionResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Domain/Response/SessionResponse.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Diploma.Service/Implementations/SessionHandlerService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Service/Implementations/SessionHandlerService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Diploma.Service/Implementations/SessionsPoolHandlerService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Service/Implementations/SessionsPoolHandlerService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Diploma.Service/Interfaces/ISessionsPoolHandlerService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Diploma.Service/Interfaces/ISessionsPoolHandlerService.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,8 +53,10 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/20f1b79db29fe0c6f7db42c4c4796268198a2c943e80e4185e1eb4c0c269ae4/SR.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2cd950acde885a4fc821befc27caa6f5759be46347bf81959abbbabedd2b16/HttpRequestJsonExtensions.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/36e740b59df23626d207e72ea77e34298e53dd99db463eee529f8c416b5664/ThrowHelper.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/436ac6362f325ef11dc7d554acc2ca9296782513c7748bc6ee7fa54273f9ff/DateTime.Windows.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/43e1aa5e3aebf618e7bc17d95f31d7f5a97dac2043b1c74ceea319e68af4c7/FormFeature.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/544f1ed5a62bb9348e579d34d205a3f6657ebfaf58ee78a61b244115f9734b/IAsyncEnumerableOfTConverter.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/5639efd3c1b1c78d577633b55ad3c56de91530a77a3117ec6256e5cfc9c131/String.Comparison.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/6a4abc33381932734b5fe8e665891a89f052eeee41e2debe188594bce29675c/ControllerActionInvoker.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/73f58a70a76e491eb4bcf9d90ef5628b378a8/_8ad91/HttpStatusCode.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7641a1a0695522e81971758464776ba68659afdcd53575f6917f7593181d9345/Dictionary.cs" root0="SKIP_HIGHLIGHTING" />
@@ -246,7 +257,8 @@
       <workItem from="1679406560644" duration="2412000" />
       <workItem from="1679489635267" duration="1092000" />
       <workItem from="1679490750141" duration="18478000" />
-      <workItem from="1679579478615" duration="2606000" />
+      <workItem from="1679579478615" duration="3376000" />
+      <workItem from="1679659903408" duration="10670000" />
     </task>
     <task id="LOCAL-00001" summary="набор ключей теперь свойство классов вместо поля">
       <created>1676762886907</created>
@@ -311,7 +323,14 @@
       <option name="project" value="LOCAL" />
       <updated>1679509711111</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="исправлена ошибка &quot;Access denied&quot;, все символы транслируются в ASCII">
+      <created>1679582291693</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1679582291693</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -358,23 +377,24 @@
     <MESSAGE value="добавлен абстрактный класс, содержащий логику банковских операций. сделано наследование от абстрактного класса" />
     <MESSAGE value="сделан сервис по контролю сессии по ее ID;&#10;добавлена возможность добавлять новые запросы на фискализацию, группируя разные операции по ID сессии&#10;нужно починить  &quot;Access denied&quot;" />
     <MESSAGE value="Добавлены игнорируемые файлы (wut)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Добавлены игнорируемые файлы (wut)" />
+    <MESSAGE value="исправлена ошибка &quot;Access denied&quot;, все символы транслируются в ASCII" />
+    <option name="LAST_COMMIT_MESSAGE" value="исправлена ошибка &quot;Access denied&quot;, все символы транслируются в ASCII" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Diploma.Service/Implementations/SessionHandlerService.cs</url>
-          <line>75</line>
-          <properties documentPath="D:\source\Diploma\Diploma.Service\Implementations\SessionHandlerService.cs" initialLine="77" containingFunctionPresentation="method 'ExecuteRecurringPaymentAsync'">
+          <url>file://$PROJECT_DIR$/Diploma.Service/Implementations/SessionHandlerServiceTest.cs</url>
+          <line>91</line>
+          <properties documentPath="D:\source\Diploma\Diploma.Service\Implementations\SessionHandlerServiceTest.cs" initialLine="91" containingFunctionPresentation="method 'ExecuteRecurringPaymentAsync'">
             <startOffsets>
-              <option value="2887" />
+              <option value="3534" />
             </startOffsets>
             <endOffsets>
-              <option value="2950" />
+              <option value="3554" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="4" />
+          <option name="timeStamp" value="8" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
