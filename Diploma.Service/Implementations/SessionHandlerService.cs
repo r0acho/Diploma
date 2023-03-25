@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Diploma.Domain.Entities;
@@ -14,6 +13,7 @@ public class SessionHandlerService : ISessionHandlerService
     private const string SYSTEM_MALFUNCTION_BANK_RESPONSE_CODE = "96";
     private const string SESSION_ABORTED = "Session aborted";
     private const string SESSION_SUCCESSFULLY = "Session completed successfully";
+    private const int INTERMEDIATE_SESSION_COST = 50;
     
     private const decimal COST_OF_ONE_KWH = 16;
     private readonly BankHttpClient _httpClient = new();
@@ -71,7 +71,7 @@ public class SessionHandlerService : ISessionHandlerService
             yield return GetSessionResponseWithError(operationResponse);
         }
         yield return operationResponse;
-        if (recurringBankOperation.WillSessionContinue == false)
+        if (recurringBankOperation.WillSessionContinue == false || recurringBankOperation.Amount != INTERMEDIATE_SESSION_COST)
         {
             yield return GetSessionResponse(operationResponse);
             //стучимся в АТОЛ

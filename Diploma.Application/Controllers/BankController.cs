@@ -1,4 +1,8 @@
+using System.Net;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Unicode;
 using Diploma.Domain.Entities;
 using Diploma.Domain.Response;
 using Diploma.Service.Interfaces;
@@ -11,6 +15,12 @@ namespace Diploma.Application.Controllers;
 public class BankController : ControllerBase
 {
     private readonly ISessionsPoolHandlerService _sessionsPoolHandlerService;
+    private readonly JsonSerializerOptions _options = new()
+    {
+        Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
+        NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString,
+        WriteIndented = true
+    };
 
     public BankController(ISessionsPoolHandlerService sessionsPoolHandlerService)
     {
@@ -20,20 +30,45 @@ public class BankController : ControllerBase
     [HttpPost(Name = "StartRecurPayment")]
     public async IAsyncEnumerable<string> RecurPay()
     {
-        RecurringBankOperation receivedData = JsonSerializer.Deserialize<RecurringBankOperation>(await Request.ReadFromJsonAsync<string>());
-        var responses = _sessionsPoolHandlerService.AddNewBankOperationAsync(receivedData);
-        await foreach (var response in responses)
+        List<string> responsesStrings = new();
+        RecurringBankOperation? receivedData = null;
+        try
         {
-            if (response is SessionResponse sessionResponse)
-            {
-                yield return JsonSerializer.Serialize(sessionResponse);
-            }
-
-            if (response is RecurOperationResponse recurOperationResponse)
-            {
-                yield return JsonSerializer.Serialize(recurOperationResponse);
-            }
-            yield return JsonSerializer.Serialize(response);
+             receivedData =
+                JsonSerializer.Deserialize<RecurringBankOperation>(await Request.ReadFromJsonAsync<string>()!, _options);
         }
+        catch (JsonException jsonException)
+        {
+            BaseResponse baseResponse = new()
+            {
+                Description = jsonException.Message,
+                StatusCode = HttpStatusCode.BadRequest
+            };
+            responsesStrings.Add(JsonSerializer.Serialize(baseResponse, _options));
+        }
+
+        if (receivedData != null)
+        {
+            var responses = _sessionsPoolHandlerService.AddNewBankOperationAsync(receivedData);
+            await foreach (var response in responses)
+            {
+                if (response is SessionResponse sessionResponse)
+                {
+                    responsesStrings.Add(JsonSerializer.Serialize(sessionResponse, _options));
+                }
+
+                else if (response is RecurOperationResponse recurOperationResponse)
+                {
+                    responsesStrings.Add(JsonSerializer.Serialize(recurOperationResponse, _options));
+                }
+                else responsesStrings.Add(JsonSerializer.Serialize(response, _options));
+            }
+        }
+
+        foreach (var response in responsesStrings)
+        {
+            yield return response;
+        }
+
     }
 }
