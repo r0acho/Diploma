@@ -104,7 +104,7 @@ public abstract class BankOperationService : IBankOperationService
         var concatedKeysBytes = Encoding.UTF8.GetBytes(concatedKeys);
         byte[] pSignBytes;
 
-        using (var encoder = new HMACSHA256(BankEnvironment.secretKey))
+        using (var encoder = new HMACSHA256(BankEnvironment.SecretKey))
         {
             pSignBytes = encoder.ComputeHash(concatedKeysBytes);
         }
