@@ -40,7 +40,7 @@ public class SessionHandlerService : ISessionHandlerService
             BankAmount = _sumOfSessionsByBank,
             TouchAmount = _sumOfSessionsByTOUCH,
             CardNumber = response.CardNumber,
-            TextResponse = response.ResponseText
+            ResponseText = response.ResponseText
         };
     }
     
@@ -52,7 +52,7 @@ public class SessionHandlerService : ISessionHandlerService
             BankAmount = _sumOfSessionsByBank,
             TouchAmount = _sumOfSessionsByTOUCH,
             CardNumber = response.CardNumber,
-            TextResponse = response.ResponseText
+            ResponseText = response.ResponseText
         };
     }
     
