@@ -1,3 +1,4 @@
+using Diploma.Domain.Entities;
 using Diploma.Service.Implementations;
 using Diploma.Service.Interfaces;
 

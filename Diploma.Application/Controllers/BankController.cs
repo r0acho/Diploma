@@ -14,6 +14,7 @@ namespace Diploma.Application.Controllers;
 [Route("[controller]")]
 public class BankController : ControllerBase
 {
+    private IConfiguration _config;
     private readonly ISessionsPoolHandlerService _sessionsPoolHandlerService;
     private readonly JsonSerializerOptions _options = new()
     {
@@ -22,8 +23,9 @@ public class BankController : ControllerBase
         WriteIndented = true
     };
 
-    public BankController(ISessionsPoolHandlerService sessionsPoolHandlerService)
+    public BankController(ISessionsPoolHandlerService sessionsPoolHandlerService, IConfiguration config)
     {
+        _config = config;
         _sessionsPoolHandlerService = sessionsPoolHandlerService;
     }
 
