@@ -25,7 +25,6 @@ public class BankController : ControllerBase
     public BankController(ISessionsPoolHandlerService sessionsPoolHandlerService)
     {
         _sessionsPoolHandlerService = sessionsPoolHandlerService;
-        Console.WriteLine("создали новый контроллер");
     }
 
     [HttpPost(Name = "StartRecurPayment")]

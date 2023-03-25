@@ -9,7 +9,6 @@ public class SessionsPoolHandlerService : ISessionsPoolHandlerService
     public IDictionary<ulong, ISessionHandlerService> SessionHandlerServices { get; } =
         new Dictionary<ulong, ISessionHandlerService>();
     
-    
     public async IAsyncEnumerable<BaseResponse> AddNewBankOperationAsync(BankOperation operation)
     {
         ulong sessionId = operation.SessionId;
