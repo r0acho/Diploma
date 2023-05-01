@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Diploma.DAL\Diploma.DAL.csproj" />
         <ProjectReference Include="..\Diploma.Domain\Diploma.Domain.csproj" />
     </ItemGroup>
 

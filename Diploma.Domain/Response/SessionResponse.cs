@@ -6,9 +6,9 @@ public class SessionResponse : BaseResponse
 {
     public decimal TouchAmount { get; set; }
     public decimal BankAmount { get; set; }
-    public decimal Difference() => TouchAmount - BankAmount;
-    [JsonPropertyName("AMOUNT")]
-    public decimal Amount { get; set; }
+    [JsonPropertyName("Difference")]
+    public decimal Difference => TouchAmount - BankAmount;
+
     [JsonPropertyName("RC")]
     public string? ResponseCode { get; set; }
     [JsonPropertyName("RCTEXT")]

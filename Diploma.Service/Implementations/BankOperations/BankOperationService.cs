@@ -29,12 +29,12 @@ public abstract class BankOperationService : IBankOperationService
     /// <summary>
     ///     Поля, которые нужно отправить для проведения транзакции
     /// </summary>
-    protected abstract List<string> RequestKeys { get; init; }
+    protected abstract List<string> RequestKeys { get; }
 
     /// <summary>
     ///     Порядок полей для вычисления параметра P_SIGN
     /// </summary>
-    protected abstract List<string> PSignOrder { get; init; }
+    protected abstract List<string> PSignOrder { get; }
 
     public string CalculatePSignOfModel(Dictionary<string, string> model)
     {

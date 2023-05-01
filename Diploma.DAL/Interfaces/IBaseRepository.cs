@@ -2,9 +2,8 @@ namespace Diploma.DAL.Interfaces;
 
 public interface IBaseRepository<T>
 {
-    bool Create(T entity);
-
+    void Add(ulong id, T? value);
     T Get(ulong id);
-
-    bool Delete(ulong id);
+    bool Contains(ulong id);
+    void Remove(ulong id);
 }

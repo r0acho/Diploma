@@ -6,22 +6,26 @@ namespace Diploma.Domain.Entities;
 public class BankOperation
 {
 
-    [JsonPropertyName("Сумма платежа, Р")] public decimal Amount { get; set; }
+    [JsonPropertyName("Сумма платежа, Р")] 
+    public decimal Amount { get; set; }
 
     [JsonPropertyName("Сессия продолжается?")]
     public bool WillSessionContinue { get; set; }
 
-    [JsonPropertyName("Тип операции")] public OperationType OperationType { get; set; }
+    [JsonPropertyName("Тип операции")] 
+    public OperationType OperationType { get; set; }
 
     [JsonPropertyName("Внутренний идентификатор платежа")]
     public ulong Order { get; set; }
 
-    [JsonPropertyName("Описание платежа")] public string? Description { get; set; }
+    [JsonPropertyName("Описание платежа")] 
+    public string? Description { get; set; }
 
     [JsonPropertyName("Компания-владелец станции")]
     public string? MerchantName { get; set; }
 
-    [JsonPropertyName("Email клиента")] public string? ClientEmail { get; set; }
+    [JsonPropertyName("Email клиента")] 
+    public string? ClientEmail { get; set; }
 
     [JsonPropertyName("Email владельца станции")]
     public string? MerchantEmail { get; set; }
@@ -29,9 +33,12 @@ public class BankOperation
     [JsonPropertyName("Идентификатор резерва или зарядной сессии")]
     public ulong SessionId { get; set; }
 
-    [JsonPropertyName("Телефон клиента")] public ulong ClientPhoneNumber { get; set; }
+    [JsonPropertyName("Телефон клиента")] 
+    public ulong ClientPhoneNumber { get; set; }
 
-    [JsonPropertyName("Номер ТСП")] public string? MerchantId { get; set; }
+    [JsonPropertyName("Номер ТСП")] 
+    public string? MerchantId { get; set; }
 
-    [JsonPropertyName("Номер устройства")] public ulong TerminalId { get; set; }
+    [JsonPropertyName("Номер устройства")] 
+    public ulong TerminalId { get; set; }
 }

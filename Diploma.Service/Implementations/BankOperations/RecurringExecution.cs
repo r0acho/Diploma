@@ -7,7 +7,7 @@ public class RecurringExecution : Payment
 {
     protected override TrType OperationType { get; } = TrType.Recurring;
 
-    protected override List<string> RequestKeys { get; init; } = new()
+    protected override List<string> RequestKeys { get; } = new()
     {
         "AMOUNT", "CURRENCY", "ORDER", "DESC", "TERMINAL", "TRTYPE", "MERCH_NAME",
         "MERCHANT", "EMAIL", "TIMESTAMP", "NONCE", "BACKREF", "NOTIFY_URL", "INT_REF", "RECUR_REF"

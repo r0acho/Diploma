@@ -36,8 +36,7 @@ public class BankController : ControllerBase
         RecurringBankOperation? receivedData = null;
         try
         {
-             receivedData =
-                JsonSerializer.Deserialize<RecurringBankOperation>(await Request.ReadFromJsonAsync<string>()!, _options);
+            receivedData = await Request.ReadFromJsonAsync<RecurringBankOperation>();
         }
         catch (JsonException jsonException)
         {

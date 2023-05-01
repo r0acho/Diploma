@@ -21,7 +21,7 @@ public class Payment : BankOperationService
     /// <summary>
     ///     Поля, которые нужно отправить для проведения транзакции
     /// </summary>
-    protected override List<string> RequestKeys { get; init; } = new()
+    protected override List<string> RequestKeys { get; } = new()
     {
         "AMOUNT", "CURRENCY", "ORDER", "DESC", "TERMINAL", "TRTYPE", "MERCH_NAME",
         "MERCHANT", "EMAIL", "TIMESTAMP", "NONCE", "BACKREF", "NOTIFY_URL"
@@ -30,7 +30,7 @@ public class Payment : BankOperationService
     /// <summary>
     ///     Порядок полей для вычисления параметра P_SIGN
     /// </summary>
-    protected override List<string> PSignOrder { get; init; } = new()
+    protected override List<string> PSignOrder { get; } = new()
     {
         "AMOUNT", "CURRENCY", "ORDER", "MERCH_NAME", "MERCHANT",
         "TERMINAL", "EMAIL", "TRTYPE", "TIMESTAMP", "NONCE", "BACKREF"

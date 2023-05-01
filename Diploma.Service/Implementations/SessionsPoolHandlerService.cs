@@ -1,3 +1,4 @@
+using Diploma.DAL.Interfaces;
 using Diploma.Domain.Entities;
 using Diploma.Domain.Response;
 using Diploma.Service.Interfaces;
@@ -6,22 +7,26 @@ namespace Diploma.Service.Implementations;
 
 public class SessionsPoolHandlerService : ISessionsPoolHandlerService
 {
-    public IDictionary<ulong, ISessionHandlerService> SessionHandlerServices { get; } =
-        new Dictionary<ulong, ISessionHandlerService>();
+    private readonly IBaseRepository<ISessionHandlerService> _services;
+
+    public SessionsPoolHandlerService(IBaseRepository<ISessionHandlerService> services)
+    {
+        _services = services;
+    }
     
     public async IAsyncEnumerable<BaseResponse> AddNewBankOperationAsync(BankOperation operation)
     {
         ulong sessionId = operation.SessionId;
-        if (SessionHandlerServices.ContainsKey(sessionId) == false)
+        if (_services.Contains(sessionId) == false)
         {
-            SessionHandlerServices.Add(sessionId, new SessionHandlerService());
+            _services.Add(sessionId, new SessionHandlerService());
         }
-        var responses = SessionHandlerServices[sessionId].StartRecurringPayment(operation);
+        var responses = _services.Get(sessionId).StartRecurringPayment(operation);
         await foreach (var recurringOperationResponse in responses)
         {
             if (recurringOperationResponse is SessionResponse)
             {
-                SessionHandlerServices.Remove(operation.SessionId);
+                _services.Remove(operation.SessionId);
             }
             yield return recurringOperationResponse;
         }

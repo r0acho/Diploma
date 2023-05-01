@@ -5,7 +5,6 @@ namespace Diploma.Service.Interfaces;
 
 public interface ISessionsPoolHandlerService
 {
-    public IDictionary<ulong, ISessionHandlerService> SessionHandlerServices { get; }
     public IAsyncEnumerable<BaseResponse> AddNewBankOperationAsync(BankOperation operation);
     public IAsyncEnumerable<BaseResponse> GetOperationResponsesAsync(ulong sessionId);
 }

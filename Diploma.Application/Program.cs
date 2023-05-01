@@ -1,3 +1,5 @@
+using Diploma.DAL.Implementations;
+using Diploma.DAL.Interfaces;
 using Diploma.Domain.Entities;
 using Diploma.Service.Implementations;
 using Diploma.Service.Interfaces;
@@ -10,7 +12,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<ISessionsPoolHandlerService, SessionsPoolHandlerService>();
+builder.Services.AddScoped<ISessionsPoolHandlerService, SessionsPoolHandlerService>();
+builder.Services.AddSingleton(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 
 var app = builder.Build();
 
