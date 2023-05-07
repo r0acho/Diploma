@@ -4,10 +4,14 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>Diploma.Infastructure</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Diploma.DAL\Diploma.DAL.csproj" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\Diploma.Domain\Diploma.Domain.csproj" />
     </ItemGroup>
 
