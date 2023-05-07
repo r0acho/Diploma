@@ -2,9 +2,10 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using Diploma.Application.Enums;
-using Diploma.Domain.Entities;
+using Diploma.Domain.Enums;
+using Diploma.Domain.Dto;
 using Diploma.Application.Interfaces;
+using Diploma.Domain.Entities;
 
 namespace Diploma.Application.Implementations.BankOperations;
 
@@ -13,6 +14,10 @@ namespace Diploma.Application.Implementations.BankOperations;
 /// </summary>
 public class Payment : BankOperationService
 {
+    public Payment(PaymentModel model, byte[] secretKey) : base(model, secretKey)
+    {
+    }
+
     /// <summary>
     ///     Тип банковой операции
     /// </summary>
@@ -38,7 +43,6 @@ public class Payment : BankOperationService
 
     protected override void ChangeModelFieldsByInheritMembers()
     {
-        SendingModel["MERCHANT_NOTIFY_EMAIL"] = CurrentBankOperation!.MerchantEmail!;
         SendingModel["CARDHOLDER_NOTIFY"] = "EMAIL";
         SendingModel["MERCHANT_NOTIFY"] = "EMAIL";
     }

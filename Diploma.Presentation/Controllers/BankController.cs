@@ -3,9 +3,9 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
-using Diploma.Domain.Entities;
+using Diploma.Domain.Dto;
 using Diploma.Domain.Response;
-using Diploma.Service.Interfaces;
+using Diploma.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Diploma.Presentation.Controllers;
@@ -30,13 +30,13 @@ public class BankController : ControllerBase
     }
 
     [HttpPost(Name = "StartRecurPayment")]
-    public async IAsyncEnumerable<string> RecurPay()
+    public async IAsyncEnumerable<string> RecurPay(string json)
     {
         List<string> responsesStrings = new();
-        RecurringBankOperation? receivedData = null;
+        RecurringBankOperationDto? receivedData = null;
         try
         {
-            receivedData = await Request.ReadFromJsonAsync<RecurringBankOperation>();
+            receivedData = JsonSerializer.Deserialize<RecurringBankOperationDto>(json, _options);
         }
         catch (JsonException jsonException)
         {

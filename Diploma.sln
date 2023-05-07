@@ -5,11 +5,13 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Domain", "Diploma.Domain\Diploma.Domain.csproj", "{DEA30EC2-0D85-4A2D-906E-EF9346FAE849}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.DAL", "Diploma.DAL\Diploma.DAL.csproj", "{2F233B8E-B8C7-480F-B4FE-1E63B66146C6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Infrastructure", "Diploma.Infrastructure\Diploma.Infrastructure.csproj", "{2F233B8E-B8C7-480F-B4FE-1E63B66146C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Service", "Diploma.Service\Diploma.Service.csproj", "{2CE23AB3-5202-4DAF-94C1-B62441A6DB6E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Application", "Diploma.Application\Diploma.Application.csproj", "{2CE23AB3-5202-4DAF-94C1-B62441A6DB6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Application", "Diploma.Application\Diploma.Application.csproj", "{5BC1A877-8DEC-4900-80D9-93C6C4B88015}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Presentation", "Diploma.Presentation\Diploma.Presentation.csproj", "{5BC1A877-8DEC-4900-80D9-93C6C4B88015}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Configuration", "Diploma.Configuration\Diploma.Configuration.csproj", "{7011196E-29A2-4E43-82D3-CD0D6FDF9F8E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{5BC1A877-8DEC-4900-80D9-93C6C4B88015}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BC1A877-8DEC-4900-80D9-93C6C4B88015}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BC1A877-8DEC-4900-80D9-93C6C4B88015}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7011196E-29A2-4E43-82D3-CD0D6FDF9F8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7011196E-29A2-4E43-82D3-CD0D6FDF9F8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7011196E-29A2-4E43-82D3-CD0D6FDF9F8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7011196E-29A2-4E43-82D3-CD0D6FDF9F8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

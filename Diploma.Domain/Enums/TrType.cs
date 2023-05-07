@@ -1,4 +1,4 @@
-﻿namespace Diploma.Application.Enums;
+﻿namespace Diploma.Domain.Enums;
 
 public enum TrType
 {

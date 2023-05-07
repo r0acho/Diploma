@@ -1,16 +1,13 @@
 using Diploma.Domain.Enums;
 using System.Text.Json.Serialization;
 
-namespace Diploma.Domain.Entities;
+namespace Diploma.Domain.Dto;
 
-public class BankOperation
+public record BankOperationDto
 {
 
     [JsonPropertyName("Сумма платежа, Р")] 
     public decimal Amount { get; set; }
-
-    [JsonPropertyName("Сессия продолжается?")]
-    public bool WillSessionContinue { get; set; }
 
     [JsonPropertyName("Тип операции")] 
     public OperationType OperationType { get; set; }

@@ -2,8 +2,11 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Diploma.Application.Implementations.BankOperations;
 using Diploma.Application.Interfaces;
+using Diploma.Configuration;
+using Diploma.Domain.Dto;
 using Diploma.Domain.Entities;
 using Diploma.Domain.Response;
+using Microsoft.Extensions.Configuration;
 
 namespace Diploma.Application.Implementations;
 
@@ -16,15 +19,25 @@ public class SessionHandlerService : ISessionHandlerService
     private const int INTERMEDIATE_SESSION_COST = 50;
     
     private const decimal COST_OF_ONE_KWH = 16;
-    private readonly BankHttpClient _httpClient = new();
-    private IBankOperationService BankOperationService { get; set; }
+    private readonly BankHttpClient _httpClient;
+    private readonly BankSettings _bankSettings;
+    private IBankOperationService? _bankOperationService { get; set; }
     
     private decimal _sumOfSessionsByBank = 0;
     private decimal _sumOfSessionsByTOUCH = 0;
     
-    public SessionHandlerService()
+    public SessionHandlerService(BankSettings bankSettings)
     {
-        BankOperationService = new RecurringExecution();
+        _bankSettings = bankSettings;
+        _httpClient = new(bankSettings.BankUrl);
+        //BankOperationService = new RecurringExecution();
+    }
+
+    public SessionHandlerService(BankSettings bankSettings, IBankOperationService service)
+    {
+        _bankSettings = bankSettings;
+        _httpClient = new(bankSettings.BankUrl);
+        _bankOperationService = service;
     }
 
     private bool IsSessionCompletedWithoutError(RecurOperationResponse response)
@@ -57,10 +70,10 @@ public class SessionHandlerService : ISessionHandlerService
     }
     
     
-    public async IAsyncEnumerable<BaseResponse> StartRecurringPayment(BankOperation recurringBankOperation)
+    public async IAsyncEnumerable<BaseResponse> StartRecurringPayment(RecurringPaymentModel paymentModel)
     {
-        _sumOfSessionsByTOUCH += recurringBankOperation.Amount;
-        var operationResponse = await ExecuteRecurringPaymentAsync(recurringBankOperation);
+        _sumOfSessionsByTOUCH += paymentModel.Amount;
+        var operationResponse = await ExecuteRecurringPaymentAsync(paymentModel);
 
         if (IsSessionCompletedWithoutError(operationResponse) == true)
         {
@@ -71,17 +84,18 @@ public class SessionHandlerService : ISessionHandlerService
             yield return GetSessionResponseWithError(operationResponse);
         }
         yield return operationResponse;
-        if (recurringBankOperation.WillSessionContinue == false || recurringBankOperation.Amount != INTERMEDIATE_SESSION_COST)
+        if (paymentModel.Amount != INTERMEDIATE_SESSION_COST)
         {
             yield return GetSessionResponse(operationResponse);
             //стучимся в АТОЛ
         }
     }
 
-    private async Task<RecurOperationResponse> ExecuteRecurringPaymentAsync(BankOperation recurringBankOperation)
+    private async Task<RecurOperationResponse> ExecuteRecurringPaymentAsync(RecurringPaymentModel recurringBankOperation)
     {
-        var sendingModel = BankOperationService.GetRequestingModel(recurringBankOperation);
-        var responseMessage = await _httpClient.SendModelToBankAsync(sendingModel);
+        if (_bankOperationService == null) _bankOperationService = new RecurringExecution(recurringBankOperation, _bankSettings.SecretKey);
+        var sendingModel = _bankOperationService.GetRequestingModel();
+        var responseMessage = await _httpClient.SendModelToBankAsync(sendingModel, _bankSettings.BankUrl!);
         string responseJson = await responseMessage.Content.ReadAsStringAsync();
         var options = new JsonSerializerOptions
         {

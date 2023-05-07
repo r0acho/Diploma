@@ -1,14 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <UserSecretsId>8fa1f9d4-808f-4397-aee5-b44248569985</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Diploma.DAL\Diploma.DAL.csproj" />
+        <ProjectReference Include="..\Diploma.Configuration\Diploma.Configuration.csproj" />
+        <ProjectReference Include="..\Diploma.Infrastructure\Diploma.Infrastructure.csproj" />
         <ProjectReference Include="..\Diploma.Domain\Diploma.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="confluent.kafka" Version="2.1.1" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     </ItemGroup>
 
 </Project>

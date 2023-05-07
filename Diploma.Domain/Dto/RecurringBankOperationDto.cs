@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace Diploma.Domain.Entities;
+namespace Diploma.Domain.Dto;
 
-public class RecurringBankOperation : BankOperation
+public record RecurringBankOperationDto : BankOperationDto
 {
     [JsonPropertyName("Уникальный идентификатор операции на ПШ")]
     public string? IntRef { get; set; }

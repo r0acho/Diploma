@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Diploma.DAL;
+namespace Diploma.Infrastructure;
 
 public class ApplicationDbContext : DbContext
 {

@@ -1,8 +1,7 @@
-using Diploma.DAL.Implementations;
-using Diploma.DAL.Interfaces;
-using Diploma.Domain.Entities;
-using Diploma.Service.Implementations;
-using Diploma.Service.Interfaces;
+using Diploma.Application.Implementations;
+using Diploma.Application.Interfaces;
+using Diploma.Infrastructure.Interfaces;
+using Diploma.Infrastructure.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +11,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<ISessionsPoolHandlerService, SessionsPoolHandlerService>();
-builder.Services.AddSingleton(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+builder.Services.AddSingleton<ISessionsPoolHandlerService, SessionsPoolHandlerService>();
+builder.Services.AddSingleton(typeof(IDictBaseRepository<>), typeof(SessionsPoolRepository<>));
+builder.Services.AddLogging();
+builder.Services.AddHostedService<KafkaConsumerService>();
+
 
 var app = builder.Build();
 

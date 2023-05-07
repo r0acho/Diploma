@@ -1,9 +1,11 @@
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
-using Diploma.Application.Enums;
 using Diploma.Application.Interfaces;
+using Diploma.Domain.Dto;
 using Diploma.Domain.Entities;
+using Diploma.Domain.Enums;
+using Diploma.Domain.Extensions;
 
 namespace Diploma.Application.Implementations.BankOperations;
 
@@ -16,10 +18,12 @@ public abstract class BankOperationService : IBankOperationService
     ///     Набор полей и значений для проведения операции
     /// </summary>
     protected Dictionary<string, string> SendingModel = new();
-
-    protected BankOperation? CurrentBankOperation;
     
     protected IdnMapping Idn = new IdnMapping();
+
+    protected PaymentModel _model;
+
+    private byte[] _secretKey;
 
     /// <summary>
     ///     Тип банковой операции
@@ -41,8 +45,15 @@ public abstract class BankOperationService : IBankOperationService
         SendingModel = model;
         return CalculatePSign();
     }
+
+    public BankOperationService(PaymentModel model, byte[] secretKey)
+    {
+        _model = model;
+        _model.trType = OperationType;
+        _secretKey = secretKey;
+    }
     
-    private void SetDataFromBankOperationModel()
+/*    private void SetDataFromBankOperationModel()
     {
         SendingModel["AMOUNT"] = CurrentBankOperation!.Amount.ToString(CultureInfo.InvariantCulture);
         SendingModel["ORDER"] = CurrentBankOperation.Order.ToString();
@@ -61,17 +72,17 @@ public abstract class BankOperationService : IBankOperationService
         SendingModel["NONCE"] = GetRandomHexString();
         SendingModel["BACKREF"] = "http://176.214.127.66:52112"; //захардкоженный IP-адрес модуля, видимого в интернете
         SendingModel["NOTIFY_URL"] = $"{SendingModel["BACKREF"]}/notify";
-    }
+    }*/
     
-    public IDictionary<string, string> GetRequestingModel(BankOperation model)
+/*    public IDictionary<string, string> GetRequestingModel(BankOperationDto? model)
     {
-        CurrentBankOperation = model ?? throw new Exception("Данные от банка null");
+        CurrentBankOperation = model ?? throw new NullReferenceException("Данные от банка null");
         SetDataFromBankOperationModel();
         SetConstantData();
         ChangeModelFieldsByInheritMembers();
         SendingModel["P_SIGN"] = CalculatePSign();
         return SendingModel;
-    }
+    }*/
     
     private string ConcatData()
     {
@@ -104,7 +115,7 @@ public abstract class BankOperationService : IBankOperationService
         var concatedKeysBytes = Encoding.UTF8.GetBytes(concatedKeys);
         byte[] pSignBytes;
 
-        using (var encoder = new HMACSHA256(BankEnvironment.SecretKey))
+        using (var encoder = new HMACSHA256(_secretKey))
         {
             pSignBytes = encoder.ComputeHash(concatedKeysBytes);
         }
@@ -120,12 +131,12 @@ public abstract class BankOperationService : IBankOperationService
     {
     }
     
-    private static string GetRandomHexString(int length = 32)
-    {
-        using var csprng = RandomNumberGenerator.Create();
-        var bytes = new byte[length];
 
-        csprng.GetNonZeroBytes(bytes);
-        return Convert.ToHexString(bytes);
+    public IDictionary<string, string> GetRequestingModel()
+    {
+        SendingModel = new Dictionary<string, string>(_model.ToKeyValuePairsString(RequestKeys));
+        ChangeModelFieldsByInheritMembers();
+        SendingModel["P_SIGN"] = CalculatePSign();
+        return SendingModel;
     }
 }

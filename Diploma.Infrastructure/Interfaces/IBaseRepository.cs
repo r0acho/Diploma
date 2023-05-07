@@ -1,9 +1,16 @@
-namespace Diploma.Infastructure.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public interface IBaseRepository<T>
+namespace Diploma.Infrastructure.Interfaces
 {
-    void Add(ulong id, T? value);
-    T Get(ulong id);
-    bool Contains(ulong id);
-    void Remove(ulong id);
+    public interface IBaseRepository<T>
+    {
+        bool Create(T entity);
+        T Get(int id);
+        IEnumerable<T> GetAll();
+        bool Delete(int id);
+    }
 }
