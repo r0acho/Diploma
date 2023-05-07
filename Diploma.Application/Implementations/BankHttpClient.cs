@@ -11,9 +11,9 @@ internal class BankHttpClient
     {
         _apiUrl = apiUrl;
     }
-    internal async Task<HttpResponseMessage> SendModelToBankAsync(IDictionary<string, string> model, string url)
+    internal async Task<HttpResponseMessage> SendModelToBankAsync(IDictionary<string, string> model)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Post, url);
+        using var request = new HttpRequestMessage(HttpMethod.Post, _apiUrl);
         request.Content = new FormUrlEncodedContent(model);
         var response = await _client.SendAsync(request);
         return response;

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Diploma.Domain.Response;
+namespace Diploma.Domain.Responses;
 
 public class RecurOperationResponse : BaseResponse
 {

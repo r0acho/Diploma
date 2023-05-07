@@ -1,6 +1,6 @@
 using Diploma.Domain.Dto;
 using Diploma.Domain.Entities;
-using Diploma.Domain.Response;
+using Diploma.Domain.Responses;
 
 namespace Diploma.Application.Interfaces;
 

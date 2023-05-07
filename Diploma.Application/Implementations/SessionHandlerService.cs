@@ -5,7 +5,7 @@ using Diploma.Application.Interfaces;
 using Diploma.Configuration;
 using Diploma.Domain.Dto;
 using Diploma.Domain.Entities;
-using Diploma.Domain.Response;
+using Diploma.Domain.Responses;
 using Microsoft.Extensions.Configuration;
 
 namespace Diploma.Application.Implementations;

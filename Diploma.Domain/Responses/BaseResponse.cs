@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Net;
 using System.Text.Json.Serialization;
 
-namespace Diploma.Domain.Response;
+namespace Diploma.Domain.Responses;
 
 
 public class BaseResponse
