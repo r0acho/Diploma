@@ -9,16 +9,13 @@ namespace Diploma.Domain.Dto
     public class FiscalReceiptDto
     {
         public string PhoneOrEmail { get; init; }
-        public string ClientId { get; init; }
         public uint TaxMode { get; init; }
-        public uint MaxDocumentsInTurn { get; init; }
-        public string Group { get; init; }
-        public int Password { get; init; }
-        public string RequestId { get; init; }
-        public (int, int, int) NonCash { get; init; }
-        public string Device { get; init; }
-        public bool FullResponse { get; init; }
+        public int Password { get; init; } = 1;
+        public string RequestId => Guid.NewGuid().ToString("N");
+        public IEnumerable<uint> NonCash { get; init; }
+        public string Device => "auto";
+        public bool FullResponse { get; init; } = false;
         public string Place { get; init; }
-        public List<ItemFiscalReceiptDto> Items { get; init; } = new();
+        public IEnumerable<ItemFiscalReceiptDto> Items { get; init; }
     }
 }

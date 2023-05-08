@@ -1,5 +1,3 @@
-using Diploma.Domain.Entities;
-
 namespace Diploma.Application.Implementations;
 
 internal class BankHttpClient

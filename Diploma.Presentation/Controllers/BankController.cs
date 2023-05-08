@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
 using Diploma.Domain.Dto;
-using Diploma.Domain.Response;
+using Diploma.Domain.Responses;
 using Diploma.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -61,6 +61,10 @@ public class BankController : ControllerBase
                 else if (response is RecurOperationResponse recurOperationResponse)
                 {
                     responsesStrings.Add(JsonSerializer.Serialize(recurOperationResponse, _options));
+                }
+                else if (response is FiscalPaymentResponse fiscalOperationResponse)
+                {
+                    responsesStrings.Add(JsonSerializer.Serialize(fiscalOperationResponse, _options));
                 }
                 else responsesStrings.Add(JsonSerializer.Serialize(response, _options));
             }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Diploma.Domain.Responses
 {
-    public record FiscalPaymentResponse
+    public record FiscalPaymentResponse : BaseResponse
     {
         public string? RequestId { get; init; }
         public string? ClientId { get; init; }

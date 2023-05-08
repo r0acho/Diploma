@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace Diploma.Domain.Responses;
 
 
-public class BaseResponse
+public record BaseResponse
 {
     protected IdnMapping _idn = new IdnMapping();
     private string _description = string.Empty;

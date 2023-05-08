@@ -1,13 +1,13 @@
 using Microsoft.Extensions.Configuration;
 using Confluent.Kafka;
 using Microsoft.Extensions.Hosting;
-using Diploma.Configuration;
 using Diploma.Application.Interfaces;
 using System.Text.Json;
 using Diploma.Domain.Dto;
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
+using Diploma.Application.Settings;
 using Microsoft.Extensions.Logging;
 using Diploma.Domain.Entities;
 using Diploma.Infrastructure.Interfaces;
@@ -19,7 +19,6 @@ public class KafkaConsumerService : BackgroundService
     private readonly IConsumer<Ignore, string> _consumer;
     private readonly KafkaSettings _kafkaSettings;
     private readonly ISessionsPoolHandlerService _sessionsPoolHandlerService;
-    private readonly IRecurPaymentsRepository _recurPaymentsRepository;
     private readonly ILogger<KafkaConsumerService> _logger;
     private readonly JsonSerializerOptions _options = new()
     {
@@ -59,18 +58,16 @@ public class KafkaConsumerService : BackgroundService
                     try
                     {
                         var paymentModelDto =
-                            JsonSerializer.Deserialize<RecurringBankOperationDto>(result.Message.Value, _options);
-                        if (paymentModelDto != null)
+                            JsonSerializer.Deserialize<RecurringBankOperationDto>(result.Message.Value, _options)!;
+                        var paymentModel = new RecurringPaymentModel();
+                        paymentModel.SetFromDtoModel(paymentModelDto);
+                        var responses =  _sessionsPoolHandlerService.AddNewBankOperationAsync(paymentModelDto);
+                        await foreach (var response in responses)
                         {
-                            var paymentModel = new RecurringPaymentModel();
-                            paymentModel.SetFromDtoModel(paymentModelDto);
-                            var responses =  _sessionsPoolHandlerService.AddNewBankOperationAsync(paymentModelDto);
-                            await foreach (var response in responses)
-                            {
-                                _logger.LogInformation(
-                                    $"{JsonSerializer.Serialize(response, _options)}");
-                            }
+                            _logger.LogInformation(
+                                $"{JsonSerializer.Serialize(response, _options)}");
                         }
+                        
                     }
                     catch (JsonException)
                     {
@@ -83,7 +80,7 @@ public class KafkaConsumerService : BackgroundService
 
                 }
             }
-        });
+        }, stoppingToken);
 
 
     }

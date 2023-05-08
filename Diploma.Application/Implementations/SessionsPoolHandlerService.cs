@@ -1,5 +1,5 @@
 using Diploma.Application.Interfaces;
-using Diploma.Configuration;
+using Diploma.Application.Settings;
 using Diploma.Domain.Dto;
 using Diploma.Domain.Entities;
 using Diploma.Domain.Responses;
@@ -15,7 +15,8 @@ public class SessionsPoolHandlerService : ISessionsPoolHandlerService
 
     public SessionsPoolHandlerService(IDictBaseRepository<ISessionHandlerService> services, IConfiguration config)
     {
-        _bankSettings = config.GetSection("BankSettings").Get<BankSettings>() ?? throw new ArgumentException("Не найдены настройки банка");
+        _bankSettings = config.GetSection("BankSettings").Get<BankSettings>() 
+                        ?? throw new ArgumentException("Не найдены настройки банка");
         _services = services;
     }
     
@@ -24,7 +25,8 @@ public class SessionsPoolHandlerService : ISessionsPoolHandlerService
         ulong sessionId = operation.SessionId;
         if (_services.Contains(sessionId) == false)
         {
-            _services.Add(sessionId, new SessionHandlerService(_bankSettings));
+            var fiscalizeService = new CheckOnlineFiscalizeService(_bankSettings.SecretKey, _bankSettings.CheckOnlineUrl);
+            _services.Add(sessionId, new SessionHandlerService(_bankSettings, fiscalizeService));
         }
         var paymentModel = new RecurringPaymentModel();
         paymentModel.SetFromDtoModel((RecurringBankOperationDto)operation);
@@ -33,7 +35,7 @@ public class SessionsPoolHandlerService : ISessionsPoolHandlerService
         {
             if (recurringOperationResponse is SessionResponse)
             {
-                _services.Remove(operation.SessionId);
+                _services.Remove(operation.SessionId); //продумать момент удаления
             }
             yield return recurringOperationResponse;
         }

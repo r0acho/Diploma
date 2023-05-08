@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Diploma.Domain.Responses;
 
-public class PaymentReferenceResponse : BaseResponse
+public record PaymentReferenceResponse : BaseResponse
 {
     public string PaymentRef { get; set; }
 }

@@ -10,8 +10,8 @@ namespace Diploma.Domain.Dto
     {
         public string? Description { get; init; }  
         public uint Price { get; init; }
-        public int Qty { get; init; }
-        public int TaxId { get; init; }
-        public int PayAttribute { get; init; }
+        public decimal QtyDecimal { get; init; }
+        public ushort TaxId { get; init; }
+        public uint PayAttribute { get; init; }
     }
 }

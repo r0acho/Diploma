@@ -1,4 +1,4 @@
-namespace Diploma.Configuration;
+namespace Diploma.Application.Settings;
 
 public class BankSettings
 {
@@ -21,6 +21,11 @@ public class BankSettings
     ///     API для генерации платежной ссылки
     /// </summary>
     public string GenPaymentRefUrl { get; init; }
+    
+    /// <summary>
+    ///     API для регистрации чека
+    /// </summary>
+    public string CheckOnlineUrl { get; init; }
 
     /// <summary>
     ///     Секретный ключ

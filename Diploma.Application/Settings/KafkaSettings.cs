@@ -1,4 +1,4 @@
-﻿namespace Diploma.Configuration;
+﻿namespace Diploma.Application.Settings;
 
 public class KafkaSettings
 {

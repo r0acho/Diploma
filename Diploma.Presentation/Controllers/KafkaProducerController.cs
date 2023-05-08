@@ -1,5 +1,5 @@
 using System.Net;
-using Diploma.Configuration;
+using Diploma.Application.Settings;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Diploma.Presentation.Controllers;

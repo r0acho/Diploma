@@ -1,8 +1,9 @@
 using System.Text.Json.Serialization;
+using Diploma.Domain.Enums;
 
 namespace Diploma.Domain.Responses;
 
-public class SessionResponse : BaseResponse
+public record SessionResponse : BaseResponse
 {
     public decimal TouchAmount { get; set; }
     public decimal BankAmount { get; set; }
@@ -15,4 +16,6 @@ public class SessionResponse : BaseResponse
     public string? ResponseText { get; set; }
     [JsonPropertyName("CARD")]
     public string? CardNumber { get; set; }
+    
+    public SessionStatus SessionStatus { get; set; }
 }

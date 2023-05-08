@@ -46,11 +46,15 @@ public abstract class BankOperationService : IBankOperationService
         return CalculatePSign();
     }
 
-    public BankOperationService(PaymentModel model, byte[] secretKey)
+    protected BankOperationService(byte[] secretKey)
+    {
+        _secretKey = secretKey;
+    }
+    
+    public BankOperationService(PaymentModel model, byte[] secretKey) : this(secretKey)
     {
         _model = model;
         _model.trType = OperationType;
-        _secretKey = secretKey;
     }
     
 /*    private void SetDataFromBankOperationModel()
