@@ -31,7 +31,7 @@ public class PaymentService : IPaymentService
     
     public async Task<RecurOperationResponse> ExecuteRecurringPayment(RecurringPaymentModel recurringBankOperation)
     {
-        if (_bankOperationService == null) _bankOperationService = new RecurringExecution(recurringBankOperation, _bankSettings.SecretKey);
+        if (_bankOperationService == null) _bankOperationService = new RecurringExecution(recurringBankOperation, _bankSettings);
         var sendingModel = _bankOperationService.GetRequestingModel();
         var responseMessage = await _httpClient.SendModelToBankAsync(sendingModel);
         string responseJson = await responseMessage.Content.ReadAsStringAsync();

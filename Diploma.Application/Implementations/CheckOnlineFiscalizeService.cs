@@ -6,6 +6,7 @@ using Diploma.Domain.Enums;
 using Diploma.Domain.Responses;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Diploma.Application.Settings;
 using Diploma.Domain.Extensions;
 
 
@@ -30,13 +31,12 @@ namespace Diploma.Application.Implementations
         };
 
         private FiscalReceiptDto _receipt;
-        private readonly string _checkApiUrl;
 
         protected override TrType OperationType => TrType.Pay;
 
-        public CheckOnlineFiscalizeService(byte[] secretKey, string checkApiUrl) : base(secretKey)
+        public CheckOnlineFiscalizeService(BankSettings bankSettings) : base(bankSettings)
         {
-            _checkApiUrl = checkApiUrl;
+            
         }
 
         protected override void ChangeModelFieldsByInheritMembers()
@@ -47,7 +47,7 @@ namespace Diploma.Application.Implementations
         public async Task<FiscalPaymentResponse> FiscalizePayment(FiscalReceiptDto receiptDto, RecurringPaymentModel lastPaymentModel)
         {
             _receipt = receiptDto;
-            var bankClient = new BankHttpClient(_checkApiUrl);
+            var bankClient = new BankHttpClient(_bankSettings.CheckOnlineUrl);
             _model = lastPaymentModel;
             var sendingModel = GetRequestingModel();
             sendingModel["OFD"] = "STARRYS"; //уточнить

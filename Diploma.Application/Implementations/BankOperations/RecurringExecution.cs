@@ -1,3 +1,4 @@
+using Diploma.Application.Settings;
 using Diploma.Domain.Dto;
 using Diploma.Domain.Entities;
 using Diploma.Domain.Enums;
@@ -6,7 +7,7 @@ namespace Diploma.Application.Implementations.BankOperations;
 
 public class RecurringExecution : Payment
 {
-    public RecurringExecution(PaymentModel model, byte[] secretKey) : base(model, secretKey)
+    public RecurringExecution(PaymentModel model, BankSettings bankSettings) : base(model, bankSettings)
     {
     }
 

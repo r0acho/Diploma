@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -9,6 +10,8 @@ namespace Diploma.Domain.Responses
 {
     public record FiscalPaymentResponse : BaseResponse
     {
+        [Key]
+        public ulong Id { get; set; }
         public string? RequestId { get; init; }
         public string? ClientId { get; init; }
         public string? Path { get; init; }

@@ -1,11 +1,12 @@
-﻿using Diploma.Domain.Entities;
+﻿using Diploma.Application.Settings;
+using Diploma.Domain.Entities;
 using Diploma.Domain.Enums;
 
 namespace Diploma.Application.Implementations.BankOperations;
 
 public class PreAuthorization : Payment
 {
-    public PreAuthorization(PaymentModel model, byte[] secretKey) : base(model, secretKey)
+    public PreAuthorization(PaymentModel model, BankSettings bankSettings) : base(model, bankSettings)
     {
     }
 

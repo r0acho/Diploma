@@ -1,6 +1,8 @@
 ﻿using Diploma.Domain.Dto;
 using Diploma.Domain.Enums;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography;
 
 namespace Diploma.Domain.Entities
@@ -10,6 +12,8 @@ namespace Diploma.Domain.Entities
         [DisplayName("AMOUNT")]
         public decimal Amount { get; set; }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         [DisplayName("ORDER")]
         public ulong Order { get; set; }
 
@@ -33,7 +37,7 @@ namespace Diploma.Domain.Entities
 
         [DisplayName("CURRENCY")]
         public string? Currency { get; set; } = "RUB";
-
+        
         [DisplayName("TRTYPE")]
         public TrType trType { get; set; }
 

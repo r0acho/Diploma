@@ -5,6 +5,7 @@ using System.Text.Json;
 using Diploma.Domain.Enums;
 using Diploma.Domain.Dto;
 using Diploma.Application.Interfaces;
+using Diploma.Application.Settings;
 using Diploma.Domain.Entities;
 
 namespace Diploma.Application.Implementations.BankOperations;
@@ -14,7 +15,7 @@ namespace Diploma.Application.Implementations.BankOperations;
 /// </summary>
 public class Payment : BankOperationService
 {
-    public Payment(PaymentModel model, byte[] secretKey) : base(model, secretKey)
+    public Payment(PaymentModel model, BankSettings bankSettings) : base(model, bankSettings)
     {
     }
 

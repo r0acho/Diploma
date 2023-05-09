@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using Diploma.Application.Interfaces;
+using Diploma.Application.Settings;
 using Diploma.Domain.Dto;
 using Diploma.Domain.Entities;
 using Diploma.Domain.Enums;
@@ -22,8 +23,8 @@ public abstract class BankOperationService : IBankOperationService
     protected IdnMapping Idn = new IdnMapping();
 
     protected PaymentModel _model;
-
-    private byte[] _secretKey;
+    
+    protected readonly BankSettings _bankSettings;
 
     /// <summary>
     ///     Тип банковой операции
@@ -39,54 +40,23 @@ public abstract class BankOperationService : IBankOperationService
     ///     Порядок полей для вычисления параметра P_SIGN
     /// </summary>
     protected abstract List<string> PSignOrder { get; }
-
+    
     public string CalculatePSignOfModel(Dictionary<string, string> model)
     {
         SendingModel = model;
         return CalculatePSign();
     }
 
-    protected BankOperationService(byte[] secretKey)
+    protected BankOperationService(BankSettings bankSettings)
     {
-        _secretKey = secretKey;
+        _bankSettings = bankSettings;
     }
     
-    public BankOperationService(PaymentModel model, byte[] secretKey) : this(secretKey)
+    public BankOperationService(PaymentModel model, BankSettings bankSettings) : this(bankSettings)
     {
         _model = model;
         _model.trType = OperationType;
     }
-    
-/*    private void SetDataFromBankOperationModel()
-    {
-        SendingModel["AMOUNT"] = CurrentBankOperation!.Amount.ToString(CultureInfo.InvariantCulture);
-        SendingModel["ORDER"] = CurrentBankOperation.Order.ToString();
-        SendingModel["DESC"] = Idn.GetAscii(CurrentBankOperation.Description!);
-        SendingModel["MERCH_NAME"] = Idn.GetAscii(CurrentBankOperation.MerchantName!);
-        SendingModel["EMAIL"] = Idn.GetAscii(CurrentBankOperation.ClientEmail!);
-        SendingModel["TERMINAL"] = CurrentBankOperation.TerminalId.ToString(); // номер терминала, нужно уточнить
-        SendingModel["MERCHANT"] = CurrentBankOperation.MerchantId!; //номер тсп, присвоенный банком, нужно уточнить
-    }
-
-    private void SetConstantData()
-    {
-        SendingModel["CURRENCY"] = "RUB";
-        SendingModel["TRTYPE"] = ((int)OperationType).ToString();
-        SendingModel["TIMESTAMP"] = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-        SendingModel["NONCE"] = GetRandomHexString();
-        SendingModel["BACKREF"] = "http://176.214.127.66:52112"; //захардкоженный IP-адрес модуля, видимого в интернете
-        SendingModel["NOTIFY_URL"] = $"{SendingModel["BACKREF"]}/notify";
-    }*/
-    
-/*    public IDictionary<string, string> GetRequestingModel(BankOperationDto? model)
-    {
-        CurrentBankOperation = model ?? throw new NullReferenceException("Данные от банка null");
-        SetDataFromBankOperationModel();
-        SetConstantData();
-        ChangeModelFieldsByInheritMembers();
-        SendingModel["P_SIGN"] = CalculatePSign();
-        return SendingModel;
-    }*/
     
     private string ConcatData()
     {
@@ -119,7 +89,7 @@ public abstract class BankOperationService : IBankOperationService
         var concatedKeysBytes = Encoding.UTF8.GetBytes(concatedKeys);
         byte[] pSignBytes;
 
-        using (var encoder = new HMACSHA256(_secretKey))
+        using (var encoder = new HMACSHA256(_bankSettings.SecretKey))
         {
             pSignBytes = encoder.ComputeHash(concatedKeysBytes);
         }

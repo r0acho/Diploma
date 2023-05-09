@@ -1,13 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
 
 namespace Diploma.Domain.Dto
 {
+    
     public class ItemFiscalReceiptDto
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
+        [JsonIgnore]
+        public ulong Id { get; set; }
+        
+        public ulong SessionId { get; set; }
         public string? Description { get; init; }  
         public uint Price { get; init; }
         public decimal QtyDecimal { get; init; }

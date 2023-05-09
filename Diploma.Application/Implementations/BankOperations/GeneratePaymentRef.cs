@@ -1,10 +1,11 @@
+using Diploma.Application.Settings;
 using Diploma.Domain.Entities;
 
 namespace Diploma.Application.Implementations.BankOperations;
 
 public class GeneratePaymentRef : Payment
 {
-    public GeneratePaymentRef(PaymentModel model, byte[] secretKey) : base(model, secretKey)
+    public GeneratePaymentRef(PaymentModel model, BankSettings bankSettings) : base(model, bankSettings)
     {
     }
 
