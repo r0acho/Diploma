@@ -7,6 +7,7 @@ using Diploma.Domain.Dto;
 using Diploma.Domain.Entities;
 using Diploma.Domain.Enums;
 using Diploma.Domain.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Diploma.Application.Implementations.BankOperations;
 
@@ -47,6 +48,11 @@ public abstract class BankOperationService : IBankOperationService
         return CalculatePSign();
     }
 
+    protected BankOperationService(IOptions<BankSettings> bankSettings)
+    {
+        _bankSettings = bankSettings.Value;
+    }
+    
     protected BankOperationService(BankSettings bankSettings)
     {
         _bankSettings = bankSettings;

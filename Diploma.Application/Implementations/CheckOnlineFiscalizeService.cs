@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Diploma.Application.Settings;
 using Diploma.Domain.Extensions;
+using Microsoft.Extensions.Options;
 
 
 namespace Diploma.Application.Implementations
@@ -34,7 +35,7 @@ namespace Diploma.Application.Implementations
 
         protected override TrType OperationType => TrType.Pay;
 
-        public CheckOnlineFiscalizeService(BankSettings bankSettings) : base(bankSettings)
+        public CheckOnlineFiscalizeService(IOptions<BankSettings> bankSettings) : base(bankSettings)
         {
             
         }

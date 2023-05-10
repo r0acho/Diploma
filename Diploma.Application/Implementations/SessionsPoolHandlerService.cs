@@ -10,9 +10,8 @@ namespace Diploma.Application.Implementations;
 public class SessionsPoolHandlerService : ISessionsPoolHandlerService
 {
     private readonly ISessionHandlerService _serviceHandlerService;
-    
-    public SessionsPoolHandlerService(ISessionStatesRepository sessionStates,
-        ISessionHandlerService sessionHandlerService)
+
+    public SessionsPoolHandlerService(ISessionHandlerService sessionHandlerService)
     {
         _serviceHandlerService = sessionHandlerService;
     }
@@ -27,4 +26,5 @@ public class SessionsPoolHandlerService : ISessionsPoolHandlerService
             yield return recurringOperationResponse;
         }
     }
+    
 }

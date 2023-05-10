@@ -6,6 +6,7 @@ using Diploma.Domain.Enums;
 using Diploma.Domain.Responses;
 using Diploma.Infrastructure.Interfaces;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Diploma.Application.Implementations;
 
@@ -22,29 +23,22 @@ public class SessionHandlerService : ISessionHandlerService
     private readonly ISessionStatesRepository _sessionStates;
     private readonly ILogger<ISessionHandlerService> _logger;
     
-    private IFiscalizePaymentService _fiscalizePaymentService;
-    private IPaymentService _paymentService;
-    private SessionStateModel _currentSessionStateModel;
+    private readonly IFiscalizePaymentService _fiscalizePaymentService;
+    private readonly IPaymentService _paymentService;
+    private SessionStateModel? _currentSessionStateModel;
     
     
-    public SessionHandlerService(BankSettings bankSettings, ILogger<ISessionHandlerService> logger,
-        IFiscalizePaymentService fiscalizePaymentService, ISessionStatesRepository sessionStatesRepository)
+    public SessionHandlerService(IOptions<BankSettings> bankSettings, ILogger<ISessionHandlerService> logger, 
+        IPaymentService paymentService, IFiscalizePaymentService fiscalizePaymentService, 
+        ISessionStatesRepository sessionStatesRepository)
     {
         _logger = logger;
         _sessionStates = sessionStatesRepository;
         _fiscalizePaymentService = fiscalizePaymentService;
-        _bankSettings = bankSettings;
-        _paymentService = new PaymentService(_bankSettings);
+        _bankSettings = bankSettings.Value;
+        _paymentService = paymentService;
     }
-
-    public SessionHandlerService(BankSettings bankSettings, 
-        IFiscalizePaymentService fiscalizePaymentService, ILogger<ISessionHandlerService> logger,
-        IBankOperationService service, ISessionStatesRepository sessionStatesRepository) : 
-        this(bankSettings, logger, fiscalizePaymentService, sessionStatesRepository)
-    {
-        _paymentService = new PaymentService(_bankSettings, service);
-    }
-
+    
     private static bool IsPaymentCompletedWithoutError(RecurOperationResponse response)
     {
         return response.ResponseCode is SUCCESS_BANK_RESPONSE_CODE or SYSTEM_MALFUNCTION_BANK_RESPONSE_CODE;
@@ -55,12 +49,12 @@ public class SessionHandlerService : ISessionHandlerService
         return new SessionResponse
         {
             Description = IsPaymentCompletedWithoutError(response) ? SESSION_SUCCESSFULLY : SESSION_ABORTED,
-            BankAmount = _currentSessionStateModel.SumOfSessionsByBank,
-            TouchAmount = _currentSessionStateModel.SumOfSessionsByTouch,
+            BankAmount = _currentSessionStateModel!.SumOfSessionsByBank,
+            TouchAmount = _currentSessionStateModel!.SumOfSessionsByTouch,
             CardNumber = response.CardNumber,
             ResponseText = response.ResponseText,
-            Id = _currentSessionStateModel.Id,
-            SessionStatus = _currentSessionStateModel.Status
+            Id = _currentSessionStateModel!.Id,
+            SessionStatus = _currentSessionStateModel!.Status
         };
     }
     
@@ -96,12 +90,12 @@ public class SessionHandlerService : ISessionHandlerService
     {
         if (IsPaymentCompletedWithoutError(recurOperationResponse) == false)
         {
-            _logger.LogWarning($"Недостаточно средств для оплаты сессии {_currentSessionStateModel.Id}");
+            _logger.LogWarning($"Недостаточно средств для оплаты сессии {_currentSessionStateModel!.Id}");
             _currentSessionStateModel.Status = SessionStatus.InsufficientFundsError;
         }
         else
         {
-            _logger.LogInformation($"Успешно выполнен промежуточный платеж в сессии {_currentSessionStateModel.Id}");
+            _logger.LogInformation($"Успешно выполнен промежуточный платеж в сессии {_currentSessionStateModel!.Id}");
             _currentSessionStateModel.SumOfSessionsByBank += recurOperationResponse.Amount;
             AddItemToReceipt(recurringPayment, _currentSessionStateModel.Items);
         }
@@ -111,14 +105,14 @@ public class SessionHandlerService : ISessionHandlerService
     {
         if (_currentSessionStateModel.SumOfSessionsByBank != _currentSessionStateModel.SumOfSessionsByTouch)
         {
-            _logger.LogWarning($"Ошибка сверки в сессии {_currentSessionStateModel.Id}");
+            _logger.LogWarning($"Ошибка сверки в сессии {_currentSessionStateModel!.Id}");
             _currentSessionStateModel.Status = SessionStatus.ReconciliationError;
         }
 
         //TODO добавить проверку ошибки фискализации чека
 
         if (_currentSessionStateModel.Status != SessionStatus.InProgress) return;
-        _logger.LogInformation($"Сессия {_currentSessionStateModel.Id} успешно завершена");
+        _logger.LogInformation($"Сессия {_currentSessionStateModel!.Id} успешно завершена");
         _currentSessionStateModel.Status = SessionStatus.Success;
 
     }
@@ -154,11 +148,11 @@ public class SessionHandlerService : ISessionHandlerService
         if (_currentSessionStateModel.Status == SessionStatus.InsufficientFundsError ||
             operationResponse.Amount != INTERMEDIATE_SESSION_COST) //заканчиваем сессию по причине нехватки средств и/или последней операции в сессии
         {
-            var fiscalResponse = await Fiscalize(recurringPayment, _currentSessionStateModel.SumOfSessionsByBank, _currentSessionStateModel.Items);
-            SetSessionStatusAfterEndOfSession(fiscalResponse);
-            //SetSessionStatusAfterEndOfSession();
+            //var fiscalResponse = await Fiscalize(recurringPayment, _currentSessionStateModel.SumOfSessionsByBank, _currentSessionStateModel.Items);
+            //SetSessionStatusAfterEndOfSession(fiscalResponse);
+            SetSessionStatusAfterEndOfSession();
             yield return GetSessionResponse(operationResponse);
-            yield return fiscalResponse;
+            //yield return fiscalResponse;
         }
         await _sessionStates.Update(_currentSessionStateModel);
     }

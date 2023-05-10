@@ -1,3 +1,6 @@
+using Diploma.Application.Settings;
+using Microsoft.Extensions.Options;
+
 namespace Diploma.Application.Implementations;
 
 internal class BankHttpClient

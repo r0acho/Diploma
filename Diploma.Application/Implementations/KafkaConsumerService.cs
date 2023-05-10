@@ -10,8 +10,10 @@ using System.Text.Unicode;
 using Diploma.Application.Settings;
 using Microsoft.Extensions.Logging;
 using Diploma.Domain.Entities;
+using Diploma.Domain.Responses;
 using Diploma.Infrastructure.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Diploma.Application.Implementations;
 
@@ -29,13 +31,13 @@ public class KafkaConsumerService : BackgroundService
     };
     
     public KafkaConsumerService(
-        IConfiguration config, 
+        IOptions<KafkaSettings> settings, 
         IServiceScopeFactory serviceScopeFactory,
         ILogger<KafkaConsumerService> logger)
     {
         _logger = logger;
         _serviceScopeFactory = serviceScopeFactory;
-        _kafkaSettings = config.GetSection("Kafka").Get<KafkaSettings>()!;
+        _kafkaSettings = settings.Value;
         var kafkaConfig = new ConsumerConfig
         {
             BootstrapServers = _kafkaSettings.BootstrapServers,
@@ -49,11 +51,11 @@ public class KafkaConsumerService : BackgroundService
     {
         //TODO
         _consumer.Subscribe(_kafkaSettings.PaymentMessagesTopic);
-        await Task.Run(async () =>
+        await Task.Run( () =>
         {
             using var scope = _serviceScopeFactory.CreateScope();
-            var sessionsPoolHandlerService = scope.ServiceProvider.GetService<ISessionsPoolHandlerService>() ??
-                                             throw new InvalidOperationException("���������� ������� ��� ������");
+            var sessionsPoolHandlerService = scope.ServiceProvider.GetService<ISessionsPoolHandlerService>()! ??
+                                             throw new InvalidOperationException("Невозможно создать контекст пула сессий");
             while (!stoppingToken.IsCancellationRequested)
             {
                 var result = _consumer.Consume(stoppingToken);
@@ -61,29 +63,49 @@ public class KafkaConsumerService : BackgroundService
                 {
                     var paymentModelDto =
                         JsonSerializer.Deserialize<RecurringBankOperationDto>(result.Message.Value, _options)!;
-                    var paymentModel = new RecurringPaymentModel();
-                    paymentModel.SetFromDtoModel(paymentModelDto);
-                    var responses =  sessionsPoolHandlerService.AddNewBankOperationAsync(paymentModelDto);
-                    await foreach (var response in responses)
-                    {
-                        _logger.LogInformation(
-                            $"{JsonSerializer.Serialize(response, _options)}");
-                    }
-                        
+                    var responses = sessionsPoolHandlerService.AddNewBankOperationAsync(paymentModelDto);
+                    _logger.LogInformation($"НАЧАЛАСЬ ОБРАБОТКА ПЛАТЕЖА {paymentModelDto.Order}");
+                    UpdateDatabaseByResponses(responses);
                 }
                 catch (JsonException)
                 {
-                    _logger.LogError("������ ����������� JSON-�������");
+                    _logger.LogError("Ошибка конвертации JSON-объекта");
                 }
                 catch
                 {
-                    _logger.LogError("����������� ������ ��� ��������� ��������� �� Kafka");
+                    _logger.LogError("Ошибка считывания сообщения из топика Kafka");
                 }
 
             }
         }, stoppingToken);
     }
 
+    private async void UpdateDatabaseByResponses(IAsyncEnumerable<BaseResponse> responses)
+    {
+        var sessionResponsesRepository = _serviceScopeFactory.CreateScope().ServiceProvider
+            .GetService<IResponsesRepository<SessionResponse>>() ?? throw new InvalidOperationException("Невозможно создать контекст таблицы сессий базы данных");
+        var recurResponsesRepository = _serviceScopeFactory.CreateScope().ServiceProvider
+            .GetService<IResponsesRepository<RecurOperationResponse>>()?? throw new InvalidOperationException("Невозможно создать контекст таблицы рекуррентных платежей базы данных");
+        var fiscalResponsesRepository = _serviceScopeFactory.CreateScope().ServiceProvider
+            .GetService<IResponsesRepository<FiscalPaymentResponse>>()?? throw new InvalidOperationException("Невозможно создать контекст таблицы чеков базы данных");
+
+        await foreach (var response in responses)
+        {
+            if (response is SessionResponse sessionResponse)
+            {
+                await sessionResponsesRepository.Create(sessionResponse);
+            }
+            else if (response is RecurOperationResponse recurOperationResponse)
+            {
+                await recurResponsesRepository.Create(recurOperationResponse);
+            }
+            else if (response is FiscalPaymentResponse fiscalOperationResponse)
+            {
+                await fiscalResponsesRepository.Create(fiscalOperationResponse);
+            }
+        }
+    }
+    
     public override void Dispose()
     {
         base.Dispose();

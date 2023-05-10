@@ -6,5 +6,5 @@ namespace Diploma.Application.Interfaces;
 
 public interface ISessionsPoolHandlerService
 {
-    public IAsyncEnumerable<BaseResponse> AddNewBankOperationAsync(BankOperationDto operation);
+    IAsyncEnumerable<BaseResponse> AddNewBankOperationAsync(BankOperationDto operation);
 }

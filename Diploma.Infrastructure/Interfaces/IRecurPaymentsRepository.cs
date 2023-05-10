@@ -5,5 +5,5 @@ namespace Diploma.Infrastructure.Interfaces;
 
 public interface IRecurPaymentsRepository : IBaseRepository<RecurringPaymentModel>
 {
-    PaymentStatus GetStatus(ulong id);
+    Task<PaymentStatus> GetStatus(ulong id);
 }
