@@ -101,6 +101,24 @@
       <riderPublish configuration="Release" platform="Any CPU" publish_profile="&lt;no publish profile&gt;" uuid_high="-7343524543949682240" uuid_low="-8731286930830683192" />
       <method v="2" />
     </configuration>
+    <configuration name="Diploma.Presentation" type="DotNetProject" factoryName=".NET Project">
+      <option name="EXE_PATH" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="USE_MONO" value="0" />
+      <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="PROJECT_PATH" value="$PROJECT_DIR$/Diploma.Presentation/Diploma.Presentation.csproj" />
+      <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
+      <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
+      <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
+      <option name="PROJECT_KIND" value="DotNetCore" />
+      <option name="PROJECT_TFM" value="" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
     <configuration name="Diploma: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/Diploma/Diploma.csproj" />
       <option name="LAUNCH_PROFILE_TFM" value="net7.0" />
@@ -198,6 +216,7 @@
       <item itemvalue=".NET Launch Settings Profile.Diploma: http" />
       <item itemvalue=".NET Launch Settings Profile.Diploma: https" />
       <item itemvalue=".NET Launch Settings Profile.Diploma: IIS Express" />
+      <item itemvalue=".NET Project.Diploma.Presentation" />
       <item itemvalue="Publish to folder.Publish Diploma to folder" />
       <item itemvalue="Publish to IIS.Publish Diploma to IIS" />
     </list>
