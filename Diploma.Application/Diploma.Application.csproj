@@ -1,19 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
-        <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <UserSecretsId>219882a8-9540-43b9-ae08-7148142bb43e</UserSecretsId>
+        <Nullable>enable</Nullable>
+        <UserSecretsId>8fa1f9d4-808f-4397-aee5-b44248569985</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.2" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+        <ProjectReference Include="..\Diploma.Infrastructure\Diploma.Infrastructure.csproj" />
+        <ProjectReference Include="..\Diploma.Domain\Diploma.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Diploma.Service\Diploma.Service.csproj" />
+      <PackageReference Include="confluent.kafka" Version="2.1.1" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     </ItemGroup>
 
 </Project>
