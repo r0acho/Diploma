@@ -13,8 +13,6 @@ namespace Diploma.Domain.Dto
         [Key]
         [JsonIgnore]
         public ulong Id { get; set; }
-        
-        public ulong SessionId { get; set; }
         public string? Description { get; init; }  
         public uint Price { get; init; }
         public decimal QtyDecimal { get; init; }

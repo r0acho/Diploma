@@ -123,10 +123,30 @@ public class SessionHandlerService : ISessionHandlerService
 
     }
     
+    private void SetSessionStatusAfterEndOfSession()
+    {
+        if (_currentSessionStateModel.SumOfSessionsByBank != _currentSessionStateModel.SumOfSessionsByTouch)
+        {
+            _logger.LogWarning($"Ошибка сверки в сессии {_currentSessionStateModel.Id}");
+            _currentSessionStateModel.Status = SessionStatus.ReconciliationError;
+        }
+
+        //TODO добавить проверку ошибки фискализации чека
+
+        if (_currentSessionStateModel.Status != SessionStatus.InProgress) return;
+        _logger.LogInformation($"Сессия {_currentSessionStateModel.Id} успешно завершена");
+        _currentSessionStateModel.Status = SessionStatus.Success;
+
+    }
+    
     public async IAsyncEnumerable<BaseResponse> StartRecurringPayment(ulong sessionId,
         RecurringPaymentModel recurringPayment)
     {
         _currentSessionStateModel = await GetOrCreateSession(sessionId);
+        if (_currentSessionStateModel.Status == SessionStatus.Success)
+        {
+            yield return new BaseResponse();
+        }
         _currentSessionStateModel.SumOfSessionsByTouch += recurringPayment.Amount;
         var operationResponse = await _paymentService.ExecuteRecurringPayment(recurringPayment);
         SetSessionStatusAfterBankOperation(operationResponse, recurringPayment);
@@ -136,6 +156,7 @@ public class SessionHandlerService : ISessionHandlerService
         {
             var fiscalResponse = await Fiscalize(recurringPayment, _currentSessionStateModel.SumOfSessionsByBank, _currentSessionStateModel.Items);
             SetSessionStatusAfterEndOfSession(fiscalResponse);
+            //SetSessionStatusAfterEndOfSession();
             yield return GetSessionResponse(operationResponse);
             yield return fiscalResponse;
         }

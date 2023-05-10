@@ -30,50 +30,25 @@ public class BankController : ControllerBase
     }
 
     [HttpPost(Name = "StartRecurPayment")]
-    public async IAsyncEnumerable<string> RecurPay(string json)
+    public async IAsyncEnumerable<string> RecurPay([FromBody] RecurringBankOperationDto receivedData)
     {
-        List<string> responsesStrings = new();
-        RecurringBankOperationDto? receivedData = null;
-        try
+        if (!ModelState.IsValid) yield break;
+        var responses = _sessionsPoolHandlerService.AddNewBankOperationAsync(receivedData);
+        await foreach (var response in responses)
         {
-            receivedData = JsonSerializer.Deserialize<RecurringBankOperationDto>(json, _options);
-        }
-        catch (JsonException jsonException)
-        {
-            BaseResponse baseResponse = new()
+            if (response is SessionResponse sessionResponse)
             {
-                Description = jsonException.Message,
-                StatusCode = HttpStatusCode.BadRequest
-            };
-            responsesStrings.Add(JsonSerializer.Serialize(baseResponse, _options));
-        }
-
-        if (receivedData != null)
-        {
-            var responses = _sessionsPoolHandlerService.AddNewBankOperationAsync(receivedData);
-            await foreach (var response in responses)
-            {
-                if (response is SessionResponse sessionResponse)
-                {
-                    responsesStrings.Add(JsonSerializer.Serialize(sessionResponse, _options));
-                }
-
-                else if (response is RecurOperationResponse recurOperationResponse)
-                {
-                    responsesStrings.Add(JsonSerializer.Serialize(recurOperationResponse, _options));
-                }
-                else if (response is FiscalPaymentResponse fiscalOperationResponse)
-                {
-                    responsesStrings.Add(JsonSerializer.Serialize(fiscalOperationResponse, _options));
-                }
-                else responsesStrings.Add(JsonSerializer.Serialize(response, _options));
+                yield return JsonSerializer.Serialize(sessionResponse, _options);
             }
+            else if (response is RecurOperationResponse recurOperationResponse)
+            {
+                yield return JsonSerializer.Serialize(recurOperationResponse, _options);
+            }
+            else if (response is FiscalPaymentResponse fiscalOperationResponse)
+            {
+                yield return JsonSerializer.Serialize(fiscalOperationResponse, _options);
+            }
+            else yield return JsonSerializer.Serialize(response, _options);
         }
-
-        foreach (var response in responsesStrings)
-        {
-            yield return response;
-        }
-
     }
 }
