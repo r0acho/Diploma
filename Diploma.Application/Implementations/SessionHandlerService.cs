@@ -5,6 +5,7 @@ using Diploma.Domain.Entities;
 using Diploma.Domain.Enums;
 using Diploma.Domain.Responses;
 using Diploma.Infrastructure.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -20,20 +21,19 @@ public class SessionHandlerService : ISessionHandlerService
     private const int COST_OF_ONE_KWH = 16;
     
     private readonly BankSettings _bankSettings;
-    private readonly ISessionStatesRepository _sessionStates;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<ISessionHandlerService> _logger;
     
     private readonly IFiscalizePaymentService _fiscalizePaymentService;
     private readonly IPaymentService _paymentService;
     private SessionStateModel? _currentSessionStateModel;
     
-    
     public SessionHandlerService(IOptions<BankSettings> bankSettings, ILogger<ISessionHandlerService> logger, 
-        IPaymentService paymentService, IFiscalizePaymentService fiscalizePaymentService, 
-        ISessionStatesRepository sessionStatesRepository)
+        IPaymentService paymentService, IFiscalizePaymentService fiscalizePaymentService,
+        IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger;
-        _sessionStates = sessionStatesRepository;
+        _serviceScopeFactory = serviceScopeFactory;
         _fiscalizePaymentService = fiscalizePaymentService;
         _bankSettings = bankSettings.Value;
         _paymentService = paymentService;
@@ -137,10 +137,6 @@ public class SessionHandlerService : ISessionHandlerService
         RecurringPaymentModel recurringPayment)
     {
         _currentSessionStateModel = await GetOrCreateSession(sessionId);
-        if (_currentSessionStateModel.Status == SessionStatus.Success)
-        {
-            yield return new BaseResponse();
-        }
         _currentSessionStateModel.SumOfSessionsByTouch += recurringPayment.Amount;
         var operationResponse = await _paymentService.ExecuteRecurringPayment(recurringPayment);
         SetSessionStatusAfterBankOperation(operationResponse, recurringPayment);
@@ -154,16 +150,27 @@ public class SessionHandlerService : ISessionHandlerService
             yield return GetSessionResponse(operationResponse);
             //yield return fiscalResponse;
         }
-        await _sessionStates.Update(_currentSessionStateModel);
+        using var scope = _serviceScopeFactory.CreateScope();
+        var sessionStatesRepository = scope.ServiceProvider.GetRequiredService<ISessionStatesRepository>();
+        await sessionStatesRepository.Update(_currentSessionStateModel);
     }
 
     private async Task<SessionStateModel> GetOrCreateSession(ulong sessionId)
     {
-        if (await _sessionStates.Exists(sessionId) == false)
+        using var scope = _serviceScopeFactory.CreateScope();
+        var sessionStatesRepository = scope.ServiceProvider.GetRequiredService<ISessionStatesRepository>();
+        if (await sessionStatesRepository.Exists(sessionId))
         {
-            await _sessionStates.Create(new SessionStateModel { Id = sessionId });
+            var session = await sessionStatesRepository.GetById(sessionId);
+            if (session.Status != SessionStatus.InProgress)
+                throw new ArgumentException("Session by required ID is already COMPLETED!");
+            return session;
         }
-
-        return await _sessionStates.GetById(sessionId);
+        else
+        {
+            var session = new SessionStateModel { Id = sessionId };
+            await sessionStatesRepository.Create(session);
+            return session;
+        }
     }
 }

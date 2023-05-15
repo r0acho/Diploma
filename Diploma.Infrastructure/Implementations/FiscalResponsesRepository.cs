@@ -7,13 +7,13 @@ namespace Diploma.Infrastructure.Implementations;
 
 public class FiscalResponsesRepository : BaseResponsesRepository<FiscalPaymentResponse>, IResponsesRepository<FiscalPaymentResponse>
 {
-    public FiscalResponsesRepository(IServiceScopeFactory serviceScopeFactory) : base(serviceScopeFactory)
+    public FiscalResponsesRepository(ApplicationDbContext db) : base(db)
     {
         
     }
     public override async Task Create(FiscalPaymentResponse entity)
     {
-        await _db.FiscalPaymentResponses.AddAsync(entity);
+        _db.FiscalPaymentResponses.Add(entity);
         await _db.SaveChangesAsync();
     }
 

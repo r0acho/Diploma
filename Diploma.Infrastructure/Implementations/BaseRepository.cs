@@ -7,10 +7,9 @@ public abstract class BaseRepository<T> : IBaseRepository<T>
 {
     protected readonly ApplicationDbContext _db;
     
-    public BaseRepository(IServiceScopeFactory serviceScopeFactory)
+    public BaseRepository(ApplicationDbContext db)
     {
-        _db = serviceScopeFactory.CreateScope().ServiceProvider.GetService<ApplicationDbContext>() ??
-              throw new InvalidOperationException("Невозможно создать контекст базы данных");
+        _db = db;
     }
 
     public abstract Task Create(T entity);

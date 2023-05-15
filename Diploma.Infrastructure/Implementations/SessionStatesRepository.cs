@@ -1,13 +1,12 @@
 using Diploma.Domain.Entities;
 using Diploma.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Diploma.Infrastructure.Implementations;
 
 public class SessionStatesRepository : BaseRepository<SessionStateModel>, ISessionStatesRepository
 {
-    public SessionStatesRepository(IServiceScopeFactory serviceScopeFactory) : base(serviceScopeFactory)
+    public SessionStatesRepository(ApplicationDbContext db) : base(db)
     {
 
     }
@@ -43,6 +42,6 @@ public class SessionStatesRepository : BaseRepository<SessionStateModel>, ISessi
 
     public async Task<bool> Exists(ulong id)
     {
-        return (await _db.Sessions.FindAsync(id)) is not null;
+        return await _db.Sessions.FindAsync(id) is not null;
     }
 }

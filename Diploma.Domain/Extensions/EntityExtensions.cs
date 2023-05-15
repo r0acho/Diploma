@@ -1,12 +1,7 @@
 ﻿using Diploma.Domain.Entities;
 using Diploma.Domain.Enums;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Diploma.Domain.Extensions
 {
@@ -20,28 +15,31 @@ namespace Diploma.Domain.Extensions
             {
                 var displayName = prop.DisplayName;
 
-                if (keys.Contains(displayName))
+                if (!keys.Contains(displayName)) continue;
+                var value = prop.GetValue(payment);
+                switch (value)
                 {
-                    var value = prop.GetValue(payment);
-                    if (value is decimal decimalValue)
-                    {
+                    case decimal decimalValue:
                         yield return new KeyValuePair<string, string>(displayName, decimalValue.ToString(CultureInfo.InvariantCulture));
-                    }
-                    else if (value is string stringValue) 
-                    {
+                        break;
+                    case string stringValue:
                         try
                         {
                             stringValue = idnMapping.GetAscii(stringValue);
                         }
-                        catch { }
+                        catch
+                        {
+                            // ignored
+                        }
+
                         yield return new KeyValuePair<string, string>(displayName, stringValue);
-                    }
-                    else if (value is TrType trType)
-                    {
+                        break;
+                    case TrType trType:
                         yield return new KeyValuePair<string, string>(displayName, ((int)trType).ToString());
-                    }
-                    else
-                        yield return new KeyValuePair<string, string>(displayName, value?.ToString()! ?? string.Empty);
+                        break;
+                    default:
+                        yield return new KeyValuePair<string, string>(displayName, value?.ToString() ?? string.Empty);
+                        break;
                 }
             }
         }

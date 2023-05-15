@@ -1,5 +1,4 @@
 using Diploma.Application.Implementations;
-using Diploma.Application.Implementations.BankOperations;
 using Diploma.Application.Interfaces;
 using Diploma.Application.Settings;
 using Diploma.Domain.Responses;
@@ -7,7 +6,7 @@ using Diploma.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Diploma.Infrastructure.Interfaces;
 using Diploma.Infrastructure.Implementations;
-
+using Diploma.Presentation.Middlewares;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,8 +37,8 @@ builder.Services.AddScoped<IResponsesRepository<SessionResponse>, SessionRespons
 builder.Services.AddScoped<ISessionStatesRepository, SessionStatesRepository>();
 builder.Services.AddScoped<IRecurPaymentsRepository, RecurPaymentsRepository>();
 //добавляем базу данных в DI-конвейер
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options
+    .UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
@@ -49,9 +48,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+//добавляем MiddleWare
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.Run();
 

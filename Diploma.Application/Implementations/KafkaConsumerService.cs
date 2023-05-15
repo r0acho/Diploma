@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using Confluent.Kafka;
 using Microsoft.Extensions.Hosting;
 using Diploma.Application.Interfaces;
@@ -9,7 +8,6 @@ using System.Text.Json.Serialization;
 using System.Text.Unicode;
 using Diploma.Application.Settings;
 using Microsoft.Extensions.Logging;
-using Diploma.Domain.Entities;
 using Diploma.Domain.Responses;
 using Diploma.Infrastructure.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,8 +52,7 @@ public class KafkaConsumerService : BackgroundService
         await Task.Run( () =>
         {
             using var scope = _serviceScopeFactory.CreateScope();
-            var sessionsPoolHandlerService = scope.ServiceProvider.GetService<ISessionsPoolHandlerService>()! ??
-                                             throw new InvalidOperationException("Невозможно создать контекст пула сессий");
+            var sessionsPoolHandlerService = scope.ServiceProvider.GetRequiredService<ISessionsPoolHandlerService>();
             while (!stoppingToken.IsCancellationRequested)
             {
                 var result = _consumer.Consume(stoppingToken);
@@ -71,7 +68,7 @@ public class KafkaConsumerService : BackgroundService
                 {
                     _logger.LogError("Ошибка конвертации JSON-объекта");
                 }
-                catch
+                catch 
                 {
                     _logger.LogError("Ошибка считывания сообщения из топика Kafka");
                 }
@@ -82,26 +79,38 @@ public class KafkaConsumerService : BackgroundService
 
     private async void UpdateDatabaseByResponses(IAsyncEnumerable<BaseResponse> responses)
     {
-        var sessionResponsesRepository = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetService<IResponsesRepository<SessionResponse>>() ?? throw new InvalidOperationException("Невозможно создать контекст таблицы сессий базы данных");
-        var recurResponsesRepository = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetService<IResponsesRepository<RecurOperationResponse>>()?? throw new InvalidOperationException("Невозможно создать контекст таблицы рекуррентных платежей базы данных");
-        var fiscalResponsesRepository = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetService<IResponsesRepository<FiscalPaymentResponse>>()?? throw new InvalidOperationException("Невозможно создать контекст таблицы чеков базы данных");
+        using var scope = _serviceScopeFactory.CreateScope();
+        var sessionResponsesRepository = scope.ServiceProvider
+            .GetRequiredService<IResponsesRepository<SessionResponse>>();
+        var recurResponsesRepository = scope.ServiceProvider
+            .GetRequiredService<IResponsesRepository<RecurOperationResponse>>();
+        var fiscalResponsesRepository = scope.ServiceProvider
+            .GetRequiredService<IResponsesRepository<FiscalPaymentResponse>>();
 
         await foreach (var response in responses)
         {
-            if (response is SessionResponse sessionResponse)
+            try
             {
-                await sessionResponsesRepository.Create(sessionResponse);
+                if (response is SessionResponse sessionResponse)
+                {
+                    await sessionResponsesRepository.Create(sessionResponse);
+                }
+                else if (response is RecurOperationResponse recurOperationResponse)
+                {
+                    await recurResponsesRepository.Create(recurOperationResponse);
+                }
+                else if (response is FiscalPaymentResponse fiscalOperationResponse)
+                {
+                    await fiscalResponsesRepository.Create(fiscalOperationResponse);
+                }
             }
-            else if (response is RecurOperationResponse recurOperationResponse)
+            catch (AggregateException ae)
             {
-                await recurResponsesRepository.Create(recurOperationResponse);
-            }
-            else if (response is FiscalPaymentResponse fiscalOperationResponse)
-            {
-                await fiscalResponsesRepository.Create(fiscalOperationResponse);
+                foreach (var ex in ae.Flatten().InnerExceptions)
+                {
+                    _logger.LogError($"Прозошли ошибки при обработке сессии \n{ex.Message}");
+                }
+                
             }
         }
     }

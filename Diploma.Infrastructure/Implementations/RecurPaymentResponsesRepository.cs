@@ -7,7 +7,7 @@ namespace Diploma.Infrastructure.Implementations;
 
 public class RecurPaymentResponsesRepository : BaseResponsesRepository<RecurOperationResponse>, IResponsesRepository<RecurOperationResponse>
 {
-    public RecurPaymentResponsesRepository(IServiceScopeFactory serviceScopeFactory) : base(serviceScopeFactory)
+    public RecurPaymentResponsesRepository(ApplicationDbContext db) : base(db)
     {
         
     }

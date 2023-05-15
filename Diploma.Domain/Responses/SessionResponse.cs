@@ -20,5 +20,6 @@ public record SessionResponse : BaseResponse
     public string? ResponseText { get; set; }
     [JsonPropertyName("CARD")]
     public string? CardNumber { get; set; }
+    [EnumDataType(typeof(SessionStatus))]
     public SessionStatus SessionStatus { get; set; }
 }

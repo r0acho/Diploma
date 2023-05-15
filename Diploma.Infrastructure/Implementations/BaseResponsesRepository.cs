@@ -8,10 +8,9 @@ public abstract class BaseResponsesRepository<T> : IResponsesRepository<T> where
 {
     protected readonly ApplicationDbContext _db;
     
-    protected BaseResponsesRepository(IServiceScopeFactory serviceScopeFactory)
+    protected BaseResponsesRepository(ApplicationDbContext db)
     {
-        _db = serviceScopeFactory.CreateScope().ServiceProvider.GetService<ApplicationDbContext>() ??
-              throw new InvalidOperationException("Невозможно создать контекст базы данных");
+        _db = db;
     }
 
     public abstract Task Create(T entity);

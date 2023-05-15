@@ -37,6 +37,10 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<SessionStateModel>()
             .Property(e => e.Status)
             .HasConversion<string>();
+        
+        modelBuilder.Entity<SessionResponse>()
+            .Property(e => e.SessionStatus)
+            .HasConversion<string>();
     }
     
 }

@@ -7,7 +7,7 @@ namespace Diploma.Infrastructure.Implementations;
 
 public class SessionResponsesRepository : BaseResponsesRepository<SessionResponse>, IResponsesRepository<SessionResponse>
 {
-    public SessionResponsesRepository(IServiceScopeFactory serviceScopeFactory) : base(serviceScopeFactory)
+    public SessionResponsesRepository(ApplicationDbContext db) : base(db)
     {
         
     }
