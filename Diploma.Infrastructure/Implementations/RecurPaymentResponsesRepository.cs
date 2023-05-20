@@ -22,4 +22,8 @@ public class RecurPaymentResponsesRepository : BaseResponsesRepository<RecurOper
     {
         return await _db.RecurOperationResponses.ToListAsync();
     }
+    public override async Task<RecurOperationResponse> GetById(ulong id)
+    {
+        return await _db.RecurOperationResponses.FindAsync(id) ?? throw new ArgumentException("Нет ответа по платежу с заданным id");;
+    }
 }

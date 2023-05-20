@@ -20,7 +20,6 @@ public class SessionHandlerService : ISessionHandlerService
     private const int INTERMEDIATE_SESSION_COST = 50;
     private const int COST_OF_ONE_KWH = 16;
     
-    private readonly BankSettings _bankSettings;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<ISessionHandlerService> _logger;
     
@@ -28,14 +27,13 @@ public class SessionHandlerService : ISessionHandlerService
     private readonly IPaymentService _paymentService;
     private SessionStateModel? _currentSessionStateModel;
     
-    public SessionHandlerService(IOptions<BankSettings> bankSettings, ILogger<ISessionHandlerService> logger, 
+    public SessionHandlerService(ILogger<SessionHandlerService> logger, 
         IPaymentService paymentService, IFiscalizePaymentService fiscalizePaymentService,
         IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger;
         _serviceScopeFactory = serviceScopeFactory;
         _fiscalizePaymentService = fiscalizePaymentService;
-        _bankSettings = bankSettings.Value;
         _paymentService = paymentService;
     }
     

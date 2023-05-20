@@ -3,6 +3,7 @@ using System.Text.Json;
 using Diploma.Application.Settings;
 using Diploma.Domain.Dto;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace Diploma.Presentation.Controllers;
 
@@ -15,9 +16,9 @@ public class KafkaProducerController : Controller
     private readonly IProducer<Null, string> _producer;
     private readonly KafkaSettings _kafkaSettings;
 
-    public KafkaProducerController(IConfiguration config)
+    public KafkaProducerController(IOptions<KafkaSettings> settings)
     {
-        _kafkaSettings = config.GetSection("Kafka").Get<KafkaSettings>()!;
+        _kafkaSettings = settings.Value;
         var kafkaConfig = new ProducerConfig
         {
             BootstrapServers = _kafkaSettings.BootstrapServers

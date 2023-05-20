@@ -49,7 +49,7 @@ public class KafkaConsumerService : BackgroundService
     {
         //TODO
         _consumer.Subscribe(_kafkaSettings.PaymentMessagesTopic);
-        await Task.Run( () =>
+        await Task.Run( async() =>
         {
             using var scope = _serviceScopeFactory.CreateScope();
             var sessionsPoolHandlerService = scope.ServiceProvider.GetRequiredService<ISessionsPoolHandlerService>();
@@ -62,7 +62,7 @@ public class KafkaConsumerService : BackgroundService
                         JsonSerializer.Deserialize<RecurringBankOperationDto>(result.Message.Value, _options)!;
                     var responses = sessionsPoolHandlerService.AddNewBankOperationAsync(paymentModelDto);
                     _logger.LogInformation($"НАЧАЛАСЬ ОБРАБОТКА ПЛАТЕЖА {paymentModelDto.Order}");
-                    UpdateDatabaseByResponses(responses);
+                    await UpdateDatabaseByResponses(responses);
                 }
                 catch (JsonException)
                 {
@@ -77,7 +77,7 @@ public class KafkaConsumerService : BackgroundService
         }, stoppingToken);
     }
 
-    private async void UpdateDatabaseByResponses(IAsyncEnumerable<BaseResponse> responses)
+    private async Task UpdateDatabaseByResponses(IAsyncEnumerable<BaseResponse> responses)
     {
         using var scope = _serviceScopeFactory.CreateScope();
         var sessionResponsesRepository = scope.ServiceProvider

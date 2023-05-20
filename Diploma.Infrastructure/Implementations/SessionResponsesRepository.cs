@@ -22,4 +22,9 @@ public class SessionResponsesRepository : BaseResponsesRepository<SessionRespons
     {
         return await _db.SessionResponses.ToListAsync();
     }
+    
+    public override async Task<SessionResponse> GetById(ulong id)
+    {
+        return await _db.SessionResponses.FindAsync(id) ?? throw new ArgumentException("Нет ответа по сессии с заданным id");;
+    }
 }

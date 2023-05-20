@@ -29,6 +29,7 @@ builder.Services.AddScoped<IFiscalizePaymentService, CheckOnlineFiscalizeService
 builder.Services.AddScoped<ISessionHandlerService, SessionHandlerService>();
 builder.Services.AddScoped<ISessionsPoolHandlerService, SessionsPoolHandlerService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<ISessionInformationService, SessionInformationService>();
 builder.Services.AddHostedService<KafkaConsumerService>();
 //добавляем репозитории в DI-конвейер
 builder.Services.AddScoped<IResponsesRepository<RecurOperationResponse>, RecurPaymentResponsesRepository>();

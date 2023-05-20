@@ -4,4 +4,5 @@ public interface IResponsesRepository<T> where T: Diploma.Domain.Responses.BaseR
 {
     Task Create(T entity);
     Task<IEnumerable<T>> GetAll();
+    Task<T> GetById(ulong id);
 }

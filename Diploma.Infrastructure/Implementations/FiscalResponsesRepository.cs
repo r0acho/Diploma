@@ -21,4 +21,9 @@ public class FiscalResponsesRepository : BaseResponsesRepository<FiscalPaymentRe
     {
         return await _db.FiscalPaymentResponses.ToListAsync();
     }
+    
+    public override async Task<FiscalPaymentResponse> GetById(ulong id)
+    {
+        return await _db.FiscalPaymentResponses.FindAsync(id) ?? throw new ArgumentException("Нет ответа по чеку с заданным id");;
+    }
 }

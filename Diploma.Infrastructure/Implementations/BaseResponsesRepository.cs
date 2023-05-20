@@ -15,4 +15,5 @@ public abstract class BaseResponsesRepository<T> : IResponsesRepository<T> where
 
     public abstract Task Create(T entity);
     public abstract Task<IEnumerable<T>> GetAll();
+    public abstract Task<T> GetById(ulong id);
 }
