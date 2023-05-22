@@ -13,7 +13,6 @@ namespace Diploma.Presentation.Controllers;
 [Route("[controller]")]
 public class BankController : ControllerBase
 {
-    private IConfiguration _config;
     private readonly ISessionsPoolHandlerService _sessionsPoolHandlerService;
     private readonly JsonSerializerOptions _options = new()
     {
@@ -22,9 +21,8 @@ public class BankController : ControllerBase
         WriteIndented = true
     };
 
-    public BankController(ISessionsPoolHandlerService sessionsPoolHandlerService, IConfiguration config)
+    public BankController(ISessionsPoolHandlerService sessionsPoolHandlerService)
     {
-        _config = config;
         _sessionsPoolHandlerService = sessionsPoolHandlerService;
     }
 
