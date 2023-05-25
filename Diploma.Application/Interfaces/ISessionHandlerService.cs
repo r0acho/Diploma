@@ -5,5 +5,5 @@ namespace Diploma.Application.Interfaces;
 
 public interface ISessionHandlerService
 {
-    public IAsyncEnumerable<BaseResponse> StartRecurringPayment(ulong idSession,RecurringPaymentModel recurringBankOperation);
+    public Task StartRecurringPayment(ulong idSession,RecurringPaymentModel recurringBankOperation);
 }

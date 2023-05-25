@@ -22,7 +22,6 @@ public static class Initializer
     {
         services.AddScoped<IFiscalizePaymentService, CheckOnlineFiscalizeService>();
         services.AddScoped<ISessionHandlerService, SessionHandlerService>();
-        services.AddScoped<ISessionsPoolHandlerService, SessionsPoolHandlerService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<ISessionInformationService, SessionInformationService>();
         services.AddScoped<IPaymentInformationService, PaymentInformationService>();

@@ -2,6 +2,7 @@
 using Diploma.Domain.Enums;
 using System.ComponentModel;
 using System.Globalization;
+using Diploma.Domain.Dto;
 
 namespace Diploma.Domain.Extensions
 {
@@ -42,6 +43,24 @@ namespace Diploma.Domain.Extensions
                         break;
                 }
             }
+        }
+
+        public static RecurringPaymentModel GetModelFromDto(this RecurringBankOperationDto recurringBankOperationDto)
+        {
+            var model = new RecurringPaymentModel
+            {
+                Amount = recurringBankOperationDto.Amount,
+                Order = recurringBankOperationDto.Order,
+                Description = recurringBankOperationDto.Description,
+                MerchantId = recurringBankOperationDto.MerchantId,
+                MerchantName = recurringBankOperationDto.MerchantName,
+                Email = recurringBankOperationDto.ClientEmail,
+                TerminalId = recurringBankOperationDto.TerminalId,
+                MerchantEmail = recurringBankOperationDto.MerchantEmail,
+                IntRef = recurringBankOperationDto.IntRef,
+                Rrn = recurringBankOperationDto.Rrn
+            };
+            return model;
         }
     }
 }

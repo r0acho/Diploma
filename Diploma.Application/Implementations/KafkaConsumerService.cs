@@ -7,6 +7,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
 using Diploma.Application.Settings;
+using Diploma.Domain.Extensions;
 using Microsoft.Extensions.Logging;
 using Diploma.Domain.Responses;
 using Diploma.Infrastructure.Interfaces;
@@ -47,12 +48,11 @@ public class KafkaConsumerService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        //TODO
         _consumer.Subscribe(_kafkaSettings.PaymentMessagesTopic);
         await Task.Run( async() =>
         {
             using var scope = _serviceScopeFactory.CreateScope();
-            var sessionsPoolHandlerService = scope.ServiceProvider.GetRequiredService<ISessionsPoolHandlerService>();
+            var sessionHandlerService = scope.ServiceProvider.GetRequiredService<ISessionHandlerService>();
             while (!stoppingToken.IsCancellationRequested)
             {
                 var result = _consumer.Consume(stoppingToken);
@@ -60,9 +60,9 @@ public class KafkaConsumerService : BackgroundService
                 {
                     var paymentModelDto =
                         JsonSerializer.Deserialize<RecurringBankOperationDto>(result.Message.Value, _options)!;
-                    var responses = sessionsPoolHandlerService.AddNewBankOperationAsync(paymentModelDto);
-                    _logger.LogInformation($"НАЧАЛАСЬ ОБРАБОТКА ПЛАТЕЖА {paymentModelDto.Order}");
-                    await UpdateDatabaseByResponses(responses);
+                    _logger.LogInformation("НАЧАЛАСЬ ОБРАБОТКА ПЛАТЕЖА {Order}", paymentModelDto.Order);
+                    await sessionHandlerService.StartRecurringPayment(paymentModelDto.SessionId,
+                        paymentModelDto.GetModelFromDto());
                 }
                 catch (JsonException)
                 {
@@ -70,49 +70,11 @@ public class KafkaConsumerService : BackgroundService
                 }
                 catch 
                 {
-                    _logger.LogError("Ошибка считывания сообщения из топика Kafka");
+                    _logger.LogError("Ошибка обработки сообщения из топика Kafka");
                 }
 
             }
         }, stoppingToken);
-    }
-
-    private async Task UpdateDatabaseByResponses(IAsyncEnumerable<BaseResponse> responses)
-    {
-        using var scope = _serviceScopeFactory.CreateScope();
-        var sessionResponsesRepository = scope.ServiceProvider
-            .GetRequiredService<IResponsesRepository<SessionResponse>>();
-        var recurResponsesRepository = scope.ServiceProvider
-            .GetRequiredService<IResponsesRepository<RecurOperationResponse>>();
-        var fiscalResponsesRepository = scope.ServiceProvider
-            .GetRequiredService<IResponsesRepository<FiscalPaymentResponse>>();
-
-        await foreach (var response in responses)
-        {
-            try
-            {
-                if (response is SessionResponse sessionResponse)
-                {
-                    await sessionResponsesRepository.Create(sessionResponse);
-                }
-                else if (response is RecurOperationResponse recurOperationResponse)
-                {
-                    await recurResponsesRepository.Create(recurOperationResponse);
-                }
-                else if (response is FiscalPaymentResponse fiscalOperationResponse)
-                {
-                    await fiscalResponsesRepository.Create(fiscalOperationResponse);
-                }
-            }
-            catch (AggregateException ae)
-            {
-                foreach (var ex in ae.Flatten().InnerExceptions)
-                {
-                    _logger.LogError($"Прозошли ошибки при обработке сессии \n{ex.Message}");
-                }
-                
-            }
-        }
     }
     
     public override void Dispose()

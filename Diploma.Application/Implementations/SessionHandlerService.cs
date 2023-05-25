@@ -1,5 +1,4 @@
 using Diploma.Application.Interfaces;
-using Diploma.Application.Settings;
 using Diploma.Domain.Dto;
 using Diploma.Domain.Entities;
 using Diploma.Domain.Enums;
@@ -7,7 +6,6 @@ using Diploma.Domain.Responses;
 using Diploma.Infrastructure.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Diploma.Application.Implementations;
 
@@ -19,8 +17,12 @@ public class SessionHandlerService : ISessionHandlerService
     private const string SESSION_SUCCESSFULLY = "Session completed successfully";
     private const int INTERMEDIATE_SESSION_COST = 50;
     private const int COST_OF_ONE_KWH = 16;
+
+    private readonly IResponsesRepository<RecurOperationResponse> _recurOperationResponsesRepository;
+    private readonly IResponsesRepository<FiscalPaymentResponse> _fiscalPaymentResponsesRepository;
+    private readonly IResponsesRepository<SessionResponse> _sessionResponsesRepository;
+    private readonly ISessionStatesRepository _sessionStatesRepository;
     
-    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<ISessionHandlerService> _logger;
     
     private readonly IFiscalizePaymentService _fiscalizePaymentService;
@@ -28,12 +30,18 @@ public class SessionHandlerService : ISessionHandlerService
     private SessionStateModel? _currentSessionStateModel;
     
     public SessionHandlerService(ILogger<SessionHandlerService> logger, 
-        IPaymentService paymentService, IFiscalizePaymentService fiscalizePaymentService,
-        IServiceScopeFactory serviceScopeFactory)
+        IPaymentService paymentService, IFiscalizePaymentService fiscalizePaymentService, 
+        IResponsesRepository<RecurOperationResponse> recurOperationResponsesRepository, 
+        IResponsesRepository<FiscalPaymentResponse> fiscalPaymentResponsesRepository, 
+        IResponsesRepository<SessionResponse> sessionResponsesRepository, 
+        ISessionStatesRepository sessionStatesRepository)
     {
         _logger = logger;
-        _serviceScopeFactory = serviceScopeFactory;
         _fiscalizePaymentService = fiscalizePaymentService;
+        _recurOperationResponsesRepository = recurOperationResponsesRepository;
+        _fiscalPaymentResponsesRepository = fiscalPaymentResponsesRepository;
+        _sessionResponsesRepository = sessionResponsesRepository;
+        _sessionStatesRepository = sessionStatesRepository;
         _paymentService = paymentService;
     }
     
@@ -131,35 +139,31 @@ public class SessionHandlerService : ISessionHandlerService
 
     }
     
-    public async IAsyncEnumerable<BaseResponse> StartRecurringPayment(ulong sessionId,
+    public async Task StartRecurringPayment(ulong sessionId,
         RecurringPaymentModel recurringPayment)
     {
         _currentSessionStateModel = await GetOrCreateSession(sessionId);
         _currentSessionStateModel.SumOfSessionsByTouch += recurringPayment.Amount;
         var operationResponse = await _paymentService.ExecuteRecurringPayment(recurringPayment);
         SetSessionStatusAfterBankOperation(operationResponse, recurringPayment);
-        yield return operationResponse;
+        await _recurOperationResponsesRepository.Create(operationResponse);
         if (_currentSessionStateModel.Status == SessionStatus.InsufficientFundsError ||
             operationResponse.Amount != INTERMEDIATE_SESSION_COST) //заканчиваем сессию по причине нехватки средств и/или последней операции в сессии
         {
             //var fiscalResponse = await Fiscalize(recurringPayment, _currentSessionStateModel.SumOfSessionsByBank, _currentSessionStateModel.Items);
             //SetSessionStatusAfterEndOfSession(fiscalResponse);
             SetSessionStatusAfterEndOfSession();
-            yield return GetSessionResponse(operationResponse);
+            await _sessionResponsesRepository.Create(GetSessionResponse(operationResponse));
             //yield return fiscalResponse;
         }
-        using var scope = _serviceScopeFactory.CreateScope();
-        var sessionStatesRepository = scope.ServiceProvider.GetRequiredService<ISessionStatesRepository>();
-        await sessionStatesRepository.Update(_currentSessionStateModel);
+        await _sessionStatesRepository.Update(_currentSessionStateModel);
     }
 
     private async Task<SessionStateModel> GetOrCreateSession(ulong sessionId)
     {
-        using var scope = _serviceScopeFactory.CreateScope();
-        var sessionStatesRepository = scope.ServiceProvider.GetRequiredService<ISessionStatesRepository>();
-        if (await sessionStatesRepository.Exists(sessionId))
+        if (await _sessionStatesRepository.Exists(sessionId))
         {
-            var session = await sessionStatesRepository.GetById(sessionId);
+            var session = await _sessionStatesRepository.GetById(sessionId);
             if (session.Status != SessionStatus.InProgress)
                 throw new ArgumentException("Session by required ID is already COMPLETED!");
             return session;
@@ -167,7 +171,7 @@ public class SessionHandlerService : ISessionHandlerService
         else
         {
             var session = new SessionStateModel { Id = sessionId };
-            await sessionStatesRepository.Create(session);
+            await _sessionStatesRepository.Create(session);
             return session;
         }
     }

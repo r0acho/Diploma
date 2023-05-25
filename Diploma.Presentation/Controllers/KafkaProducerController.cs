@@ -24,20 +24,7 @@ public class KafkaProducerController : Controller
         };
         _producer = new ProducerBuilder<Null, string>(kafkaConfig).Build();
     }
-
-    [HttpPost]
-    public async Task<IActionResult> ProduceMessage(string message)
-    {
-        try
-        {
-            var result = await _producer.ProduceAsync(_kafkaSettings.PaymentMessagesTopic, new Message<Null, string> { Value = message });
-            return Ok($"Message '{result.Message.Value}' was sent to partition {result.TopicPartition.Partition} with offset {result.Offset}");
-        }
-        catch (ProduceException<Null, string> e)
-        {
-            return StatusCode((int)HttpStatusCode.InternalServerError, $"Error producing message: {e.Error.Reason}");
-        }
-    }
+    
     
     [HttpPost("RecurMessage")]
     public async Task<IActionResult> ProduceRecurMessage([FromBody] RecurringBankOperationDto receivedData)
