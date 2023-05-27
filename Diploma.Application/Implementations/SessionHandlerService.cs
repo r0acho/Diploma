@@ -4,7 +4,6 @@ using Diploma.Domain.Entities;
 using Diploma.Domain.Enums;
 using Diploma.Domain.Responses;
 using Diploma.Infrastructure.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Diploma.Application.Implementations;
@@ -18,50 +17,54 @@ public class SessionHandlerService : ISessionHandlerService
     private const int INTERMEDIATE_SESSION_COST = 50;
     private const int COST_OF_ONE_KWH = 16;
 
-    private readonly IResponsesRepository<RecurOperationResponse> _recurOperationResponsesRepository;
-    private readonly IResponsesRepository<FiscalPaymentResponse> _fiscalPaymentResponsesRepository;
-    private readonly IResponsesRepository<SessionResponse> _sessionResponsesRepository;
-    private readonly ISessionStatesRepository _sessionStatesRepository;
-    
-    private readonly ILogger<ISessionHandlerService> _logger;
-    
     private readonly IFiscalizePaymentService _fiscalizePaymentService;
+    private readonly IChecksRepository _checksRepository;
+
+    private readonly ILogger<ISessionHandlerService> _logger;
     private readonly IPaymentService _paymentService;
+
+    private readonly IResponsesRepository<RecurOperationResponse> _recurOperationResponsesRepository;
+    private readonly ISessionStatesRepository _sessionStatesRepository;
     private SessionStateModel? _currentSessionStateModel;
-    
-    public SessionHandlerService(ILogger<SessionHandlerService> logger, 
-        IPaymentService paymentService, IFiscalizePaymentService fiscalizePaymentService, 
-        IResponsesRepository<RecurOperationResponse> recurOperationResponsesRepository, 
-        IResponsesRepository<FiscalPaymentResponse> fiscalPaymentResponsesRepository, 
-        IResponsesRepository<SessionResponse> sessionResponsesRepository, 
+
+    public SessionHandlerService(ILogger<SessionHandlerService> logger,
+        IPaymentService paymentService, IFiscalizePaymentService fiscalizePaymentService,
+        IResponsesRepository<RecurOperationResponse> recurOperationResponsesRepository,
+        IChecksRepository checksRepository,
         ISessionStatesRepository sessionStatesRepository)
     {
         _logger = logger;
         _fiscalizePaymentService = fiscalizePaymentService;
         _recurOperationResponsesRepository = recurOperationResponsesRepository;
-        _fiscalPaymentResponsesRepository = fiscalPaymentResponsesRepository;
-        _sessionResponsesRepository = sessionResponsesRepository;
+        _checksRepository = checksRepository;
         _sessionStatesRepository = sessionStatesRepository;
         _paymentService = paymentService;
     }
-    
+
+    public async Task StartRecurringPayment(ulong sessionId,
+        RecurringPaymentModel recurringPayment)
+    {
+        if (recurringPayment.Amount <= 0) throw new ArgumentException("Некорректная сумма платежа");
+        _currentSessionStateModel = await GetOrCreateSession(sessionId);
+        _currentSessionStateModel.SumOfSessionsByTouch += recurringPayment.Amount;
+        var operationResponse = await _paymentService.ExecuteRecurringPayment(recurringPayment);
+        SetSessionStatusAfterBankOperation(operationResponse, recurringPayment);
+        await _recurOperationResponsesRepository.Create(operationResponse);
+        if (_currentSessionStateModel.Status == SessionStatus.InsufficientFundsError ||
+            operationResponse.Amount !=
+            INTERMEDIATE_SESSION_COST) //заканчиваем сессию по причине нехватки средств и/или последней операции в сессии
+        {
+            var fiscalResponse = await _fiscalizePaymentService.FiscalizePayment(_currentSessionStateModel, recurringPayment, COST_OF_ONE_KWH);
+            SetSessionStatusAfterEndOfSession(fiscalResponse);
+            await _checksRepository.Create(fiscalResponse);
+        }
+
+        await _sessionStatesRepository.Update(_currentSessionStateModel);
+    }
+
     private static bool IsPaymentCompletedWithoutError(RecurOperationResponse response)
     {
         return response.ResponseCode is SUCCESS_BANK_RESPONSE_CODE or SYSTEM_MALFUNCTION_BANK_RESPONSE_CODE;
-    }
-
-    private SessionResponse GetSessionResponse(RecurOperationResponse response)
-    {
-        return new SessionResponse
-        {
-            Description = IsPaymentCompletedWithoutError(response) ? SESSION_SUCCESSFULLY : SESSION_ABORTED,
-            BankAmount = _currentSessionStateModel!.SumOfSessionsByBank,
-            TouchAmount = _currentSessionStateModel!.SumOfSessionsByTouch,
-            CardNumber = response.CardNumber,
-            ResponseText = response.ResponseText,
-            Id = _currentSessionStateModel!.Id,
-            SessionStatus = _currentSessionStateModel!.Status
-        };
     }
     
     private static void AddItemToReceipt(PaymentModel paymentModel, ICollection<ItemFiscalReceiptDto> items)
@@ -72,25 +75,10 @@ public class SessionHandlerService : ISessionHandlerService
             Description = paymentModel.Description,
             Price = (uint)paymentModel.Amount * 100,
             QtyDecimal = paymentModel.Amount / COST_OF_ONE_KWH,
-            TaxId = 1, //узнать процент налога
-            PayAttribute = 4 //какой нужен?
         });
     }
     
 
-    private async Task<FiscalPaymentResponse> Fiscalize(RecurringPaymentModel paymentModel, 
-        decimal sum, IEnumerable<ItemFiscalReceiptDto> items)
-    {
-        var fiscalReceiptDto = new FiscalReceiptDto
-        {
-            PhoneOrEmail = paymentModel.Email!, TaxMode = 1,
-            Items = items, NonCash = new [] { (uint)sum * 100 },
-            Place = paymentModel.ModuleUrl!
-        };
-
-        return await _fiscalizePaymentService.FiscalizePayment(fiscalReceiptDto, paymentModel);
-    }
-    
     private void SetSessionStatusAfterBankOperation(RecurOperationResponse recurOperationResponse,
         RecurringPaymentModel recurringPayment)
     {
@@ -107,7 +95,7 @@ public class SessionHandlerService : ISessionHandlerService
         }
     }
 
-    private void SetSessionStatusAfterEndOfSession(FiscalPaymentResponse fiscalPaymentResponse)
+    private void SetSessionStatusAfterEndOfSession(FiscalizeResponse fiscalPaymentResponse)
     {
         if (_currentSessionStateModel.SumOfSessionsByBank != _currentSessionStateModel.SumOfSessionsByTouch)
         {
@@ -115,49 +103,17 @@ public class SessionHandlerService : ISessionHandlerService
             _currentSessionStateModel.Status = SessionStatus.ReconciliationError;
         }
 
-        //TODO добавить проверку ошибки фискализации чека
+        if (fiscalPaymentResponse.ErrorJson != null)
+        {
+            _logger.LogWarning($"Ошибка фискализации в сессии {_currentSessionStateModel!.Id}");
+            _currentSessionStateModel.Status = SessionStatus.FiscalizationError;
+        }
 
         if (_currentSessionStateModel.Status != SessionStatus.InProgress) return;
         _logger.LogInformation($"Сессия {_currentSessionStateModel!.Id} успешно завершена");
         _currentSessionStateModel.Status = SessionStatus.Success;
-
     }
     
-    private void SetSessionStatusAfterEndOfSession()
-    {
-        if (_currentSessionStateModel.SumOfSessionsByBank != _currentSessionStateModel.SumOfSessionsByTouch)
-        {
-            _logger.LogWarning($"Ошибка сверки в сессии {_currentSessionStateModel.Id}");
-            _currentSessionStateModel.Status = SessionStatus.ReconciliationError;
-        }
-
-        //TODO добавить проверку ошибки фискализации чека
-
-        if (_currentSessionStateModel.Status != SessionStatus.InProgress) return;
-        _logger.LogInformation($"Сессия {_currentSessionStateModel.Id} успешно завершена");
-        _currentSessionStateModel.Status = SessionStatus.Success;
-
-    }
-    
-    public async Task StartRecurringPayment(ulong sessionId,
-        RecurringPaymentModel recurringPayment)
-    {
-        _currentSessionStateModel = await GetOrCreateSession(sessionId);
-        _currentSessionStateModel.SumOfSessionsByTouch += recurringPayment.Amount;
-        var operationResponse = await _paymentService.ExecuteRecurringPayment(recurringPayment);
-        SetSessionStatusAfterBankOperation(operationResponse, recurringPayment);
-        await _recurOperationResponsesRepository.Create(operationResponse);
-        if (_currentSessionStateModel.Status == SessionStatus.InsufficientFundsError ||
-            operationResponse.Amount != INTERMEDIATE_SESSION_COST) //заканчиваем сессию по причине нехватки средств и/или последней операции в сессии
-        {
-            //var fiscalResponse = await Fiscalize(recurringPayment, _currentSessionStateModel.SumOfSessionsByBank, _currentSessionStateModel.Items);
-            //SetSessionStatusAfterEndOfSession(fiscalResponse);
-            SetSessionStatusAfterEndOfSession();
-            await _sessionResponsesRepository.Create(GetSessionResponse(operationResponse));
-            //yield return fiscalResponse;
-        }
-        await _sessionStatesRepository.Update(_currentSessionStateModel);
-    }
 
     private async Task<SessionStateModel> GetOrCreateSession(ulong sessionId)
     {

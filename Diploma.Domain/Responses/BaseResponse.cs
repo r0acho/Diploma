@@ -4,11 +4,11 @@ using System.Text.Json.Serialization;
 
 namespace Diploma.Domain.Responses;
 
-
 public record BaseResponse
 {
-    protected IdnMapping _idn = new IdnMapping();
     private string _description = string.Empty;
+    protected IdnMapping _idn = new();
+
     [JsonPropertyName("DESC")]
     public string Description
     {
@@ -16,9 +16,7 @@ public record BaseResponse
         set => _description = _idn.GetUnicode(value);
     }
 
-    [JsonPropertyName("TIMESTAMP")] 
-    public string Timestamp { get; set; } = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+    [JsonPropertyName("TIMESTAMP")] public string Timestamp { get; set; } = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
 
     public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.OK;
-
 }

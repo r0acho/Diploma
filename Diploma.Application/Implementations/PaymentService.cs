@@ -11,28 +11,27 @@ namespace Diploma.Application.Implementations;
 
 public class PaymentService : IPaymentService
 {
-    private readonly BankHttpClient _httpClient;
-    private readonly BankSettings _bankSettings;
-    
-    private IBankOperationService _bankOperationService;
-    
     private const int COST_OF_ONE_KWH = 16;
-    
+    private readonly BankSettings _bankSettings;
+    private readonly BankHttpClient _httpClient;
+
+    private IBankOperationService _bankOperationService;
+
     public PaymentService(IOptions<BankSettings> bankSettings)
     {
         _bankSettings = bankSettings.Value;
         _httpClient = new BankHttpClient(bankSettings.Value.BankUrl);
     }
-    
+
     public async Task<RecurOperationResponse> ExecuteRecurringPayment(RecurringPaymentModel recurringBankOperation)
     {
         _bankOperationService = new RecurringExecution(recurringBankOperation, _bankSettings);
         var sendingModel = _bankOperationService.GetRequestingModel();
         var responseMessage = await _httpClient.SendModelToBankAsync(sendingModel);
-        string responseJson = await responseMessage.Content.ReadAsStringAsync();
+        var responseJson = await responseMessage.Content.ReadAsStringAsync();
         var options = new JsonSerializerOptions
         {
-            NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString 
+            NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString
         };
         try
         {

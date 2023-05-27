@@ -1,7 +1,7 @@
 using Diploma.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using Diploma.Presentation.Extensions;
 using Diploma.Presentation.Middlewares;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -30,6 +30,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
@@ -38,4 +39,3 @@ app.MapControllers();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.Run();
-

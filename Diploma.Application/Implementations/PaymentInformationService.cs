@@ -7,12 +7,12 @@ namespace Diploma.Application.Implementations;
 public class PaymentInformationService : IPaymentInformationService
 {
     private readonly IResponsesRepository<RecurOperationResponse> _recurResponsesRepository;
-    
+
     public PaymentInformationService(IResponsesRepository<RecurOperationResponse> recurResponsesRepository)
     {
         _recurResponsesRepository = recurResponsesRepository;
     }
-    
+
     public async Task<IEnumerable<RecurOperationResponse>> GetRecurPaymentResponses()
     {
         return await _recurResponsesRepository.GetAll();

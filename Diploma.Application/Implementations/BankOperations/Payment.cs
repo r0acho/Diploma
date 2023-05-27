@@ -1,13 +1,6 @@
-﻿using System.Globalization;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
-using Diploma.Domain.Enums;
-using Diploma.Domain.Dto;
-using Diploma.Application.Interfaces;
-using Diploma.Application.Settings;
+﻿using Diploma.Application.Settings;
 using Diploma.Domain.Entities;
-using Microsoft.Extensions.Options;
+using Diploma.Domain.Enums;
 
 namespace Diploma.Application.Implementations.BankOperations;
 
@@ -23,7 +16,7 @@ public class Payment : BankOperationService
     /// <summary>
     ///     Тип банковой операции
     /// </summary>
-    protected override TrType OperationType  => TrType.Pay;
+    protected override TrType OperationType => TrType.Pay;
 
     /// <summary>
     ///     Поля, которые нужно отправить для проведения транзакции

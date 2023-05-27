@@ -1,29 +1,32 @@
 using Diploma.Domain.Responses;
 using Diploma.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Diploma.Infrastructure.Implementations;
 
-public class RecurPaymentResponsesRepository : BaseResponsesRepository<RecurOperationResponse>, IResponsesRepository<RecurOperationResponse>
+public class RecurPaymentResponsesRepository : IResponsesRepository<RecurOperationResponse>
 {
-    public RecurPaymentResponsesRepository(ApplicationDbContext db) : base(db)
+    private readonly ApplicationDbContext _db;
+    public RecurPaymentResponsesRepository(ApplicationDbContext db)
     {
-        
+        _db = db;
     }
-    
-    public override async Task Create(RecurOperationResponse entity)
+
+    public async Task Create(RecurOperationResponse entity)
     {
-        await _db.RecurOperationResponses.AddAsync(entity);
+        await _db.Payments.AddAsync(entity);
         await _db.SaveChangesAsync();
     }
 
-    public override async Task<IEnumerable<RecurOperationResponse>> GetAll()
+    public async Task<IEnumerable<RecurOperationResponse>> GetAll()
     {
-        return await _db.RecurOperationResponses.ToListAsync();
+        return await _db.Payments.ToListAsync();
     }
-    public override async Task<RecurOperationResponse> GetById(ulong id)
+
+    public async Task<RecurOperationResponse> GetById(ulong id)
     {
-        return await _db.RecurOperationResponses.FindAsync(id) ?? throw new ArgumentException("Нет ответа по платежу с заданным id");;
+        return await _db.Payments.FindAsync(id) ??
+               throw new ArgumentException("Нет ответа по платежу с заданным id");
+        ;
     }
 }

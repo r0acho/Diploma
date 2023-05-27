@@ -6,8 +6,8 @@ namespace Diploma.Presentation.Middlewares;
 
 public class ExceptionHandlingMiddleware
 {
-    private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+    private readonly RequestDelegate _next;
 
     public ExceptionHandlingMiddleware(
         RequestDelegate next,
@@ -53,11 +53,12 @@ public class ExceptionHandlingMiddleware
         }
     }
 
-    private async Task HandleExceptionAsync(HttpContext context, string exMsg, HttpStatusCode httpStatusCode, string message)
+    private async Task HandleExceptionAsync(HttpContext context, string exMsg, HttpStatusCode httpStatusCode,
+        string message)
     {
         _logger.LogError(exMsg);
 
-        HttpResponse response = context.Response;
+        var response = context.Response;
 
         response.ContentType = "application/json";
         response.StatusCode = (int)httpStatusCode;

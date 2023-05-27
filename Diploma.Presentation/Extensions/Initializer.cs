@@ -12,15 +12,13 @@ public static class Initializer
     public static void InitializeRepositories(this IServiceCollection services)
     {
         services.AddScoped<IResponsesRepository<RecurOperationResponse>, RecurPaymentResponsesRepository>();
-        services.AddScoped<IResponsesRepository<FiscalPaymentResponse>, FiscalResponsesRepository>();
-        services.AddScoped<IResponsesRepository<SessionResponse>, SessionResponsesRepository>();
+        services.AddScoped<IChecksRepository, ChecksRepository>();
         services.AddScoped<ISessionStatesRepository, SessionStatesRepository>();
-        services.AddScoped<IRecurPaymentsRepository, RecurPaymentsRepository>();
     }
-    
+
     public static void InitializeServices(this IServiceCollection services)
     {
-        services.AddScoped<IFiscalizePaymentService, CheckOnlineFiscalizeService>();
+        services.AddScoped<IFiscalizePaymentService, AtolFiscalizeService>();
         services.AddScoped<ISessionHandlerService, SessionHandlerService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<ISessionInformationService, SessionInformationService>();
@@ -33,5 +31,6 @@ public static class Initializer
         services.AddOptions();
         services.Configure<KafkaSettings>(config.GetSection("Kafka"));
         services.Configure<BankSettings>(config.GetSection("BankSettings"));
+        services.Configure<AtolSettings>(config.GetSection("AtolSettings"));
     }
 }

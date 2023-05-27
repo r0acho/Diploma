@@ -1,6 +1,5 @@
 using Diploma.Application.Settings;
 using Diploma.Domain.Entities;
-using Microsoft.Extensions.Options;
 
 namespace Diploma.Application.Implementations.BankOperations;
 

@@ -1,7 +1,3 @@
-using Diploma.Application.Implementations.BankOperations;
-using Diploma.Domain.Dto;
-using Diploma.Domain.Entities;
-
 namespace Diploma.Application.Interfaces;
 
 public interface IBankOperationService

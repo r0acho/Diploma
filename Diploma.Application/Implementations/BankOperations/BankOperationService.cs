@@ -3,7 +3,6 @@ using System.Security.Cryptography;
 using System.Text;
 using Diploma.Application.Interfaces;
 using Diploma.Application.Settings;
-using Diploma.Domain.Dto;
 using Diploma.Domain.Entities;
 using Diploma.Domain.Enums;
 using Diploma.Domain.Extensions;
@@ -16,16 +15,32 @@ namespace Diploma.Application.Implementations.BankOperations;
 /// </summary>
 public abstract class BankOperationService : IBankOperationService
 {
+    protected readonly BankSettings _bankSettings;
+
+    protected PaymentModel _model;
+
+    protected IdnMapping Idn = new();
+
     /// <summary>
     ///     Набор полей и значений для проведения операции
     /// </summary>
     protected Dictionary<string, string> SendingModel = new();
-    
-    protected IdnMapping Idn = new IdnMapping();
 
-    protected PaymentModel _model;
-    
-    protected readonly BankSettings _bankSettings;
+    protected BankOperationService(IOptions<BankSettings> bankSettings)
+    {
+        _bankSettings = bankSettings.Value;
+    }
+
+    protected BankOperationService(BankSettings bankSettings)
+    {
+        _bankSettings = bankSettings;
+    }
+
+    public BankOperationService(PaymentModel model, BankSettings bankSettings) : this(bankSettings)
+    {
+        _model = model;
+        _model.trType = OperationType;
+    }
 
     /// <summary>
     ///     Тип банковой операции
@@ -41,29 +56,22 @@ public abstract class BankOperationService : IBankOperationService
     ///     Порядок полей для вычисления параметра P_SIGN
     /// </summary>
     protected abstract List<string> PSignOrder { get; }
-    
+
     public string CalculatePSignOfModel(Dictionary<string, string> model)
     {
         SendingModel = model;
         return CalculatePSign();
     }
 
-    protected BankOperationService(IOptions<BankSettings> bankSettings)
+
+    public IDictionary<string, string> GetRequestingModel()
     {
-        _bankSettings = bankSettings.Value;
+        SendingModel = new Dictionary<string, string>(_model.ToKeyValuePairsString(RequestKeys));
+        ChangeModelFieldsByInheritMembers();
+        SendingModel["P_SIGN"] = CalculatePSign();
+        return SendingModel;
     }
-    
-    protected BankOperationService(BankSettings bankSettings)
-    {
-        _bankSettings = bankSettings;
-    }
-    
-    public BankOperationService(PaymentModel model, BankSettings bankSettings) : this(bankSettings)
-    {
-        _model = model;
-        _model.trType = OperationType;
-    }
-    
+
     private string ConcatData()
     {
         var concatedKeysBuilder = new StringBuilder();
@@ -74,9 +82,7 @@ public abstract class BankOperationService : IBankOperationService
             {
                 var currentValue = string.Empty;
                 if (value is string stringElement)
-                {
                     currentValue = stringElement.Length != 0 ? stringElement.Length + stringElement : "-";
-                }
 
                 concatedKeysBuilder.Append(currentValue);
             }
@@ -109,14 +115,5 @@ public abstract class BankOperationService : IBankOperationService
     /// </summary>
     protected virtual void ChangeModelFieldsByInheritMembers()
     {
-    }
-    
-
-    public IDictionary<string, string> GetRequestingModel()
-    {
-        SendingModel = new Dictionary<string, string>(_model.ToKeyValuePairsString(RequestKeys));
-        ChangeModelFieldsByInheritMembers();
-        SendingModel["P_SIGN"] = CalculatePSign();
-        return SendingModel;
     }
 }

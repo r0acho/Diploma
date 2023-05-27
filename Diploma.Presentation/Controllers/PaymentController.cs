@@ -9,7 +9,7 @@ namespace Diploma.Presentation.Controllers;
 public class PaymentController : ControllerBase
 {
     private readonly IPaymentInformationService _paymentInformationService;
-    
+
     public PaymentController(IPaymentInformationService paymentInformationService)
     {
         _paymentInformationService = paymentInformationService;
@@ -20,7 +20,7 @@ public class PaymentController : ControllerBase
     {
         return await _paymentInformationService.GetRecurPaymentResponses();
     }
-    
+
     [HttpGet("GetPaymentResponseById")]
     public async Task<RecurOperationResponse> GetPaymentResponseById(ulong id)
     {

@@ -1,9 +1,8 @@
-﻿namespace Diploma.Domain.Enums
+﻿namespace Diploma.Domain.Enums;
+
+public enum PaymentStatus
 {
-    public enum PaymentStatus
-    {
-        InProgress,
-        Accepted,
-        Cancelled
-    }
+    InProgress,
+    Accepted,
+    Cancelled
 }

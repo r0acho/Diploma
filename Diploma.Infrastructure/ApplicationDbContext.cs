@@ -1,9 +1,9 @@
-﻿using System.Text.Json;
+﻿using System.Text.Encodings.Web;
+using System.Text.Json;
 using Diploma.Domain.Dto;
 using Diploma.Domain.Entities;
 using Diploma.Domain.Responses;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace Diploma.Infrastructure;
 
@@ -14,34 +14,32 @@ public class ApplicationDbContext : DbContext
     {
         Database.EnsureCreated();
     }
-    
-    public DbSet<SessionStateModel> Sessions { get; set; }
-    public DbSet<RecurringPaymentModel> RecurringPaymentModels { get; set; }
-    public DbSet<RecurOperationResponse> RecurOperationResponses { get; set; } 
-    public DbSet<FiscalPaymentResponse> FiscalPaymentResponses { get; set; }
-    public DbSet<SessionResponse> SessionResponses { get; set; }
 
+    public DbSet<SessionStateModel> Sessions { get; set; }
+    public DbSet<RecurOperationResponse> Payments { get; set; }
+    public DbSet<FiscalizeResponse> Checks { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         var options = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
-        
+
         modelBuilder.Entity<SessionStateModel>()
             .Property(s => s.Items)
             .HasConversion(
                 v => JsonSerializer.Serialize(v, options),
                 v => JsonSerializer.Deserialize<List<ItemFiscalReceiptDto>>(v, options));
-        
+
         modelBuilder.Entity<SessionStateModel>()
             .Property(e => e.Status)
             .HasConversion<string>();
         
-        modelBuilder.Entity<SessionResponse>()
-            .Property(e => e.SessionStatus)
-            .HasConversion<string>();
+        modelBuilder.Entity<SessionStateModel>()
+            .Property(s => s.DifferenceSum)
+            .HasComputedColumnSql("(\"SumOfSessionsByTouch\" - \"SumOfSessionsByBank\")")
+            .IsRequired();
     }
-    
 }

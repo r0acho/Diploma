@@ -1,10 +1,10 @@
 using System.Net;
 using System.Text.Json;
+using Confluent.Kafka;
 using Diploma.Application.Settings;
 using Diploma.Domain.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Confluent.Kafka;
 
 namespace Diploma.Presentation.Controllers;
 
@@ -12,8 +12,8 @@ namespace Diploma.Presentation.Controllers;
 [Route("[controller]")]
 public class KafkaProducerController : Controller
 {
-    private readonly IProducer<Null, string> _producer;
     private readonly KafkaSettings _kafkaSettings;
+    private readonly IProducer<Null, string> _producer;
 
     public KafkaProducerController(IOptions<KafkaSettings> settings)
     {
@@ -24,16 +24,18 @@ public class KafkaProducerController : Controller
         };
         _producer = new ProducerBuilder<Null, string>(kafkaConfig).Build();
     }
-    
-    
+
+
     [HttpPost("RecurMessage")]
     public async Task<IActionResult> ProduceRecurMessage([FromBody] RecurringBankOperationDto receivedData)
     {
-        if (!ModelState.IsValid) return StatusCode((int)HttpStatusCode.BadRequest, $"Bad data request");
+        if (!ModelState.IsValid) return StatusCode((int)HttpStatusCode.BadRequest, "Bad data request");
         try
         {
-            var result = await _producer.ProduceAsync(_kafkaSettings.PaymentMessagesTopic, new Message<Null, string> { Value = JsonSerializer.Serialize(receivedData) });
-            return Ok($"Message '{result.Message.Value}' was sent to partition {result.TopicPartition.Partition} with offset {result.Offset}");
+            var result = await _producer.ProduceAsync(_kafkaSettings.PaymentMessagesTopic,
+                new Message<Null, string> { Value = JsonSerializer.Serialize(receivedData) });
+            return Ok(
+                $"Message '{result.Message.Value}' was sent to partition {result.TopicPartition.Partition} with offset {result.Offset}");
         }
         catch (ProduceException<Null, string> e)
         {

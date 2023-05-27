@@ -21,7 +21,7 @@ public class BankSettings
     ///     API для генерации платежной ссылки
     /// </summary>
     public string GenPaymentRefUrl { get; init; }
-    
+
     /// <summary>
     ///     API для регистрации чека
     /// </summary>
@@ -32,5 +32,4 @@ public class BankSettings
     /// </summary>
     public byte[] SecretKey => Convert.FromHexString(FirstComponent)
         .Zip(Convert.FromHexString(SecondComponent), (a, b) => (byte)(a ^ b)).ToArray();
-
 }

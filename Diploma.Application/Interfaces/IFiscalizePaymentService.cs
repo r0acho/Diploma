@@ -1,11 +1,10 @@
-﻿using Diploma.Domain.Responses;
-using Diploma.Domain.Dto;
+﻿using Diploma.Domain.Dto;
 using Diploma.Domain.Entities;
+using Diploma.Domain.Responses;
 
-namespace Diploma.Application.Interfaces
+namespace Diploma.Application.Interfaces;
+
+public interface IFiscalizePaymentService
 {
-    public interface IFiscalizePaymentService
-    {
-        Task<FiscalPaymentResponse> FiscalizePayment(FiscalReceiptDto receiptDto, RecurringPaymentModel lastPaymentModel);
-    }
+    Task<FiscalizeResponse> FiscalizePayment(SessionStateModel sessionStateModel, RecurringPaymentModel lastPaymentModel, decimal costOfOneKwh);
 }
