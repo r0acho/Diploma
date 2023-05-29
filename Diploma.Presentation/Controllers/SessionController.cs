@@ -16,16 +16,22 @@ public class SessionController : ControllerBase
         _sessionInformationService = sessionInformationService;
     }
 
-    [HttpGet("GetSessionStates")]
+    [HttpGet("GetSessions")]
     public async Task<IEnumerable<SessionStateModel>> GetSessionStates()
     {
         return await _sessionInformationService.GetSessionStates();
     }
     
-
-    [HttpGet("GetSessionStateById")]
+    [HttpGet("GetSessions/{id}")]
     public async Task<SessionStateModel> GetSessionStateById(ulong id)
     {
         return await _sessionInformationService.GetSessionStateById(id);
+    }
+
+    [HttpDelete("GetSessions/{id}")]
+    public async Task<IActionResult> DeleteSessionById(ulong id)
+    {
+        await _sessionInformationService.DeleteSessionById(id);
+        return Ok(200);
     }
 }

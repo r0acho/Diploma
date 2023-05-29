@@ -19,8 +19,7 @@ builder.Services.InitializeRepositories();
 //добавляем сервисы в DI-конвейер
 builder.Services.InitializeServices();
 //добавляем базу данных в DI-конвейер
-builder.Services.AddDbContext<ApplicationDbContext>(options => options
-    .UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+builder.Services.InitializeDatabase(configuration);
 
 var app = builder.Build();
 

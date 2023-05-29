@@ -23,4 +23,14 @@ public class SessionInformationService : ISessionInformationService
     {
         return await _sessionStatesRepository.GetById(id);
     }
+
+    public async Task DeleteSessionById(ulong id)
+    {
+        await _sessionStatesRepository.DeleteById(id);
+    }
+
+    public async Task UpdateSession(SessionStateModel model)
+    {
+        await _sessionStatesRepository.Update(model);
+    }
 }

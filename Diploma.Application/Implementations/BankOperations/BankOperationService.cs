@@ -26,11 +26,6 @@ public abstract class BankOperationService : IBankOperationService
     /// </summary>
     protected Dictionary<string, string> SendingModel = new();
 
-    protected BankOperationService(IOptions<BankSettings> bankSettings)
-    {
-        _bankSettings = bankSettings.Value;
-    }
-
     protected BankOperationService(BankSettings bankSettings)
     {
         _bankSettings = bankSettings;

@@ -49,19 +49,20 @@ public class KafkaConsumerService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _consumer.Subscribe(_kafkaSettings.PaymentMessagesTopic);
+        _logger.LogInformation("Модуль обработки сообщений сконфигурирован и готов к работе");
         await Task.Run(async () =>
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var sessionHandlerService = scope.ServiceProvider.GetRequiredService<ISessionHandlerService>();
             while (!stoppingToken.IsCancellationRequested)
             {
+                _logger.LogInformation("Ожидание следующего сообщения");
                 var result = _consumer.Consume(stoppingToken);
                 try
                 {
+                    using var scope = _serviceScopeFactory.CreateScope();
+                    var sessionHandlerService = scope.ServiceProvider.GetRequiredService<ISessionHandlerService>();
                     var paymentModelDto =
                         JsonSerializer.Deserialize<RecurringBankOperationDto>(result.Message.Value, _options)!;
-                    _logger.LogInformation("НАЧАЛАСЬ ОБРАБОТКА ПЛАТЕЖА {Order}", paymentModelDto.Order);
-                    _logger.LogCritical(paymentModelDto.ClientEmail);
+                    _logger.LogInformation("Началась обработка платежа {Order}", paymentModelDto.Order);
                     await sessionHandlerService.StartRecurringPayment(paymentModelDto.SessionId,
                         paymentModelDto.GetModelFromDto());
                 }

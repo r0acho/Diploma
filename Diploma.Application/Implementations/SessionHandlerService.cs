@@ -20,7 +20,7 @@ public class SessionHandlerService : ISessionHandlerService
     private readonly IFiscalizePaymentService _fiscalizePaymentService;
     private readonly IChecksRepository _checksRepository;
 
-    private readonly ILogger<ISessionHandlerService> _logger;
+    private readonly ILogger<SessionHandlerService> _logger;
     private readonly IPaymentService _paymentService;
 
     private readonly IResponsesRepository<RecurOperationResponse> _recurOperationResponsesRepository;
@@ -44,7 +44,10 @@ public class SessionHandlerService : ISessionHandlerService
     public async Task StartRecurringPayment(ulong sessionId,
         RecurringPaymentModel recurringPayment)
     {
-        if (recurringPayment.Amount <= 0) throw new ArgumentException("Некорректная сумма платежа");
+        if (recurringPayment.Amount is <= 0 or > INTERMEDIATE_SESSION_COST )
+        {
+            _logger.LogError($"Некорреткная сумма платежа {recurringPayment.Amount} в сессии {sessionId}");
+        };
         _currentSessionStateModel = await GetOrCreateSession(sessionId);
         _currentSessionStateModel.SumOfSessionsByTouch += recurringPayment.Amount;
         var operationResponse = await _paymentService.ExecuteRecurringPayment(recurringPayment);
@@ -102,11 +105,19 @@ public class SessionHandlerService : ISessionHandlerService
             _logger.LogWarning($"Ошибка сверки в сессии {_currentSessionStateModel!.Id}");
             _currentSessionStateModel.Status = SessionStatus.ReconciliationError;
         }
+        else
+        {
+            _logger.LogInformation($"Сверка в сессии {_currentSessionStateModel!.Id} прошла успешно");
+        }
 
         if (fiscalPaymentResponse.ErrorJson != null)
         {
             _logger.LogWarning($"Ошибка фискализации в сессии {_currentSessionStateModel!.Id}");
             _currentSessionStateModel.Status = SessionStatus.FiscalizationError;
+        }
+        else
+        {
+            _logger.LogInformation($"Фискализация чека в сессии {_currentSessionStateModel!.Id} прошла успешно");
         }
 
         if (_currentSessionStateModel.Status != SessionStatus.InProgress) return;
@@ -120,14 +131,20 @@ public class SessionHandlerService : ISessionHandlerService
         if (await _sessionStatesRepository.Exists(sessionId))
         {
             var session = await _sessionStatesRepository.GetById(sessionId);
-            if (session.Status != SessionStatus.InProgress)
-                throw new ArgumentException("Session by required ID is already COMPLETED!");
-            return session;
+            if (session.Status == SessionStatus.InProgress)
+            {
+                _logger.LogInformation("Из БД успешно извлеклась сессия с ID = {SessionId}", sessionId);
+                return session;
+            }
+            string errorMessage = $"Сессия по переданному ID = {sessionId} уже завершена!";
+            _logger.LogError(errorMessage);
+            throw new ArgumentException(errorMessage);
         }
         else
         {
             var session = new SessionStateModel { Id = sessionId };
             await _sessionStatesRepository.Create(session);
+            _logger.LogInformation("В БД создана сессия под ID {SessionId}", sessionId);
             return session;
         }
     }

@@ -7,4 +7,6 @@ public interface ISessionInformationService
 {
     Task<IEnumerable<SessionStateModel>> GetSessionStates();
     Task<SessionStateModel> GetSessionStateById(ulong id);
+    Task DeleteSessionById(ulong id);
+    Task UpdateSession(SessionStateModel model);
 }

@@ -5,6 +5,7 @@ using Diploma.Application.Settings;
 using Diploma.Domain.Entities;
 using Diploma.Domain.Entities.Atol;
 using Diploma.Domain.Responses;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Diploma.Application.Implementations;
@@ -12,15 +13,18 @@ namespace Diploma.Application.Implementations;
 public class AtolFiscalizeService : IFiscalizePaymentService
 {
     private readonly AtolSettings _atolSettings;
+    private readonly ILogger<AtolFiscalizeService> _logger;
 
-    public AtolFiscalizeService(IOptions<AtolSettings> atolSettings)
+    public AtolFiscalizeService(IOptions<AtolSettings> atolSettings, ILogger<AtolFiscalizeService> logger)
     {
+        _logger = logger;
         _atolSettings = atolSettings.Value;
     }
     
 
     public async Task<FiscalizeResponse> FiscalizePayment(SessionStateModel stateModel, RecurringPaymentModel lastPaymentModel, decimal costOfOneKwh)
     {
+        _logger.LogInformation("Началась фискализация чека сессии {StateModelId}", stateModel.Id);
         TimeSpan timeSinceDate = DateTime.Now.Subtract(_atolSettings.AtolTokenInfo.LastLogin);
         if (timeSinceDate.TotalHours > 23)
         {
@@ -49,6 +53,17 @@ public class AtolFiscalizeService : IFiscalizePaymentService
         receiptData.Receipt.Company.Sno = _atolSettings.Sno;
         receiptData.Receipt.Company.Inn = _atolSettings.Inn;
         receiptData.Receipt.Company.PaymentAddress = _atolSettings.Address;
+        SetReceiptItems(receiptData, stateModel, lastPaymentModel, costOfOneKwh);
+        SetReceiptPayments(receiptData, stateModel);
+        receiptData.Receipt.Total = stateModel.SumOfSessionsByBank;
+        receiptData.Receipt.Cashier = _atolSettings.Cashier;
+        receiptData.Service.CallbackUrl = _atolSettings.CallbackUrl;
+        return receiptData;
+    }
+
+    private void SetReceiptItems(ReceiptData receiptData, SessionStateModel stateModel, RecurringPaymentModel lastPaymentModel,
+        decimal costOfOneKwh)
+    {
         receiptData.Receipt.Items = new List<ReceiptItem>
         {
             new ReceiptItem
@@ -65,6 +80,10 @@ public class AtolFiscalizeService : IFiscalizePaymentService
                 }
             }
         };
+    }
+
+    private void SetReceiptPayments(ReceiptData receiptData, SessionStateModel stateModel)
+    {
         receiptData.Receipt.Payments = new List<ReceiptPayment>
         {
             new ReceiptPayment
@@ -73,10 +92,6 @@ public class AtolFiscalizeService : IFiscalizePaymentService
                 Sum = stateModel.SumOfSessionsByBank
             }
         };
-        receiptData.Receipt.Total = stateModel.SumOfSessionsByBank;
-        receiptData.Receipt.Cashier = _atolSettings.Cashier;
-        receiptData.Service.CallbackUrl = _atolSettings.CallbackUrl;
-        return receiptData;
     }
     
     private async Task<FiscalizeResponse> SendFiscalizeRequest(ReceiptData data, ulong sessionId)

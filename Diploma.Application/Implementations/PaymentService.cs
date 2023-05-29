@@ -5,20 +5,22 @@ using Diploma.Application.Interfaces;
 using Diploma.Application.Settings;
 using Diploma.Domain.Entities;
 using Diploma.Domain.Responses;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Diploma.Application.Implementations;
 
 public class PaymentService : IPaymentService
 {
-    private const int COST_OF_ONE_KWH = 16;
     private readonly BankSettings _bankSettings;
     private readonly BankHttpClient _httpClient;
 
     private IBankOperationService _bankOperationService;
+    private readonly ILogger<PaymentService> _logger;
 
-    public PaymentService(IOptions<BankSettings> bankSettings)
+    public PaymentService(IOptions<BankSettings> bankSettings, ILogger<PaymentService> logger)
     {
+        _logger = logger;
         _bankSettings = bankSettings.Value;
         _httpClient = new BankHttpClient(bankSettings.Value.BankUrl);
     }
@@ -41,9 +43,8 @@ public class PaymentService : IPaymentService
         }
         catch (JsonException)
         {
-            Console.WriteLine();
+            _logger.LogError("Получен некорректный ответ от банка");
+            throw;
         }
-
-        return new RecurOperationResponse();
     }
 }

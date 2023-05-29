@@ -4,6 +4,7 @@ using Diploma.Domain.Dto;
 using Diploma.Domain.Entities;
 using Diploma.Domain.Responses;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Diploma.Infrastructure;
 
@@ -15,6 +16,11 @@ public class ApplicationDbContext : DbContext
         Database.EnsureCreated();
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddFilter((category, level) => false)));
+    }
+    
     public DbSet<SessionStateModel> Sessions { get; set; }
     public DbSet<RecurOperationResponse> Payments { get; set; }
     public DbSet<FiscalizeResponse> Checks { get; set; }

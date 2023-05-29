@@ -15,14 +15,16 @@ public class PaymentController : ControllerBase
         _paymentInformationService = paymentInformationService;
     }
 
-    [HttpGet("GetPaymentResponses")]
-    public async Task<IEnumerable<RecurOperationResponse>> GetAllPaymentResponses()
+    [HttpGet]
+    [Route("GetPayments/")]
+    public async Task<IEnumerable<RecurOperationResponse>> Payments()
     {
         return await _paymentInformationService.GetRecurPaymentResponses();
     }
 
-    [HttpGet("GetPaymentResponseById")]
-    public async Task<RecurOperationResponse> GetPaymentResponseById(ulong id)
+    [HttpGet]
+    [Route("GetPayments/{id}")]
+    public async Task<RecurOperationResponse> Payments(ulong id)
     {
         return await _paymentInformationService.GetRecurPaymentResponseById(id);
     }

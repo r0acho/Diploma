@@ -16,7 +16,6 @@ public class AtolSettings
     public int TypeOfPayment { get; set; }
     public string Sno { get; set; }
     public string CallbackUrl { get; set; }
-
-
+    
     public AtolTokenInfo AtolTokenInfo { get; set; }
 }
