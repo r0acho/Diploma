@@ -42,5 +42,5 @@ public record SessionStateModel
     /// Разность между общей суммой сессий по банковским картам и общей суммой сессий по ТАЧу.
     /// </summary>
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    public decimal DifferenceSum => SumOfSessionsByBank - SumOfSessionsByTouch;
+    public decimal DifferenceSum { get; set; }
 }
