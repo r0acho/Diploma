@@ -69,3 +69,5 @@
 | /Check/GetChecks | GET | Получить список всех чеков |
 | /Check/GetChecks/{id} | GET | Получить чек по ID |
 | /Check/GetChecks/{uuid} | GET | Получить чек по UUID |
+
+### [Вспомогательное ПО для тестирования модуля](https://github.com/r0acho/DiplomaTestAPI)
