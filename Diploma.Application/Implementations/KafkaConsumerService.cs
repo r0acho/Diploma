@@ -12,76 +12,86 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Diploma.Application.Implementations;
-
-public class KafkaConsumerService : BackgroundService
+namespace Diploma.Application.Implementations
 {
-    private readonly IConsumer<Ignore, string> _consumer;
-    private readonly KafkaSettings _kafkaSettings;
-    private readonly ILogger<KafkaConsumerService> _logger;
-
-    private readonly JsonSerializerOptions _options = new()
+    /// <summary>
+    /// Реализация фонового сервиса для чтения сообщений из топика Kafka.
+    /// </summary>
+    public class KafkaConsumerService : BackgroundService
     {
-        Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
-        NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString,
-        WriteIndented = true
-    };
+        private readonly IConsumer<Ignore, string> _consumer;
+        private readonly KafkaSettings _kafkaSettings;
+        private readonly ILogger<KafkaConsumerService> _logger;
 
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-
-    public KafkaConsumerService(
-        IOptions<KafkaSettings> settings,
-        IServiceScopeFactory serviceScopeFactory,
-        ILogger<KafkaConsumerService> logger)
-    {
-        _logger = logger;
-        _serviceScopeFactory = serviceScopeFactory;
-        _kafkaSettings = settings.Value;
-        var kafkaConfig = new ConsumerConfig
+        private readonly JsonSerializerOptions _options = new()
         {
-            BootstrapServers = _kafkaSettings.BootstrapServers,
-            GroupId = _kafkaSettings.GroupId,
-            AutoOffsetReset = AutoOffsetReset.Earliest
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
+            NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString,
+            WriteIndented = true
         };
-        _consumer = new ConsumerBuilder<Ignore, string>(kafkaConfig).Build();
-    }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        _consumer.Subscribe(_kafkaSettings.PaymentMessagesTopic);
-        _logger.LogInformation("Модуль обработки сообщений сконфигурирован и готов к работе");
-        await Task.Run(async () =>
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+
+        public KafkaConsumerService(
+            IOptions<KafkaSettings> settings,
+            IServiceScopeFactory serviceScopeFactory,
+            ILogger<KafkaConsumerService> logger)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            _logger = logger;
+            _serviceScopeFactory = serviceScopeFactory;
+            _kafkaSettings = settings.Value;
+            var kafkaConfig = new ConsumerConfig
             {
-                _logger.LogInformation("Ожидание следующего сообщения");
-                var result = _consumer.Consume(stoppingToken);
-                try
-                {
-                    using var scope = _serviceScopeFactory.CreateScope();
-                    var sessionHandlerService = scope.ServiceProvider.GetRequiredService<ISessionHandlerService>();
-                    var paymentModelDto =
-                        JsonSerializer.Deserialize<RecurringBankOperationDto>(result.Message.Value, _options)!;
-                    _logger.LogInformation("Началась обработка платежа {Order}", paymentModelDto.Order);
-                    await sessionHandlerService.StartRecurringPayment(paymentModelDto.SessionId,
-                        paymentModelDto.GetModelFromDto());
-                }
-                catch (JsonException)
-                {
-                    _logger.LogError("Ошибка конвертации JSON-объекта");
-                }
-                catch
-                {
-                    _logger.LogError("Ошибка обработки сообщения из топика Kafka");
-                }
-            }
-        }, stoppingToken);
-    }
+                BootstrapServers = _kafkaSettings.BootstrapServers,
+                GroupId = _kafkaSettings.GroupId,
+                AutoOffsetReset = AutoOffsetReset.Earliest
+            };
+            _consumer = new ConsumerBuilder<Ignore, string>(kafkaConfig).Build();
+        }
 
-    public override void Dispose()
-    {
-        base.Dispose();
-        _consumer.Dispose();
-        GC.SuppressFinalize(this);
+        /// <summary>
+        /// Метод, вызываемый при запуске фонового сервиса.
+        /// </summary>
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            _consumer.Subscribe(_kafkaSettings.PaymentMessagesTopic);
+            _logger.LogInformation("Модуль обработки сообщений сконфигурирован и готов к работе");
+            await Task.Run(async () =>
+            {
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    _logger.LogInformation("Ожидание следующего сообщения");
+                    var result = _consumer.Consume(stoppingToken);
+                    try
+                    {
+                        using var scope = _serviceScopeFactory.CreateScope();
+                        var sessionHandlerService = scope.ServiceProvider.GetRequiredService<ISessionHandlerService>();
+                        var paymentModelDto =
+                            JsonSerializer.Deserialize<RecurringBankOperationDto>(result.Message.Value, _options)!;
+                        _logger.LogInformation("Началась обработка платежа {Order}", paymentModelDto.Order);
+                        await sessionHandlerService.StartRecurringPayment(paymentModelDto.SessionId,
+                            paymentModelDto.GetModelFromDto());
+                    }
+                    catch (JsonException)
+                    {
+                        _logger.LogError("Ошибка конвертации JSON-объекта");
+                    }
+                    catch
+                    {
+                        _logger.LogError("Ошибка обработки сообщения из топика Kafka");
+                    }
+                }
+            }, stoppingToken);
+        }
+
+        /// <summary>
+        /// Метод освобождения ресурсов.
+        /// </summary>
+        public override void Dispose()
+        {
+            base.Dispose();
+            _consumer.Dispose();
+            GC.SuppressFinalize(this);
+        }
     }
 }

@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Diploma.Presentation.Middlewares;
 
+/// <summary>
+/// Класс Middleware, перехватывающий необработанные исключения
+/// </summary>
 public class ExceptionHandlingMiddleware
 {
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
@@ -17,6 +20,10 @@ public class ExceptionHandlingMiddleware
         _logger = logger;
     }
 
+    /// <summary>
+    /// Метод вызова следующего метода из цепочки вызовов
+    /// </summary>
+    /// <param name="httpContext">Контекст запроса</param>
     public async Task InvokeAsync(HttpContext httpContext)
     {
         try
@@ -53,6 +60,13 @@ public class ExceptionHandlingMiddleware
         }
     }
 
+    /// <summary>
+    /// Метод отправки статуса об ошибке в формате JSON
+    /// </summary>
+    /// <param name="context">Контекст запроса</param>
+    /// <param name="exMsg">Сообщение об ошибке (текст из Exception)</param>
+    /// <param name="httpStatusCode">HTTP-код ответа</param>
+    /// <param name="message">Ответ сервера</param>
     private async Task HandleExceptionAsync(HttpContext context, string exMsg, HttpStatusCode httpStatusCode,
         string message)
     {

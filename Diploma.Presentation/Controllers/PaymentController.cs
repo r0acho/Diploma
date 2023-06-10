@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Diploma.Presentation.Controllers;
 
+/// <summary>
+/// API для получения информации о рекуррентных платежах из БД
+/// </summary>
 [ApiController]
 [Route("[controller]")]
 public class PaymentController : ControllerBase
@@ -15,6 +18,10 @@ public class PaymentController : ControllerBase
         _paymentInformationService = paymentInformationService;
     }
 
+    /// <summary>
+    /// Получить информацию о всех рекуррентных платежах из БД
+    /// </summary>
+    /// <returns>Список платежей</returns>
     [HttpGet]
     [Route("GetPayments/")]
     public async Task<IEnumerable<RecurOperationResponse>> Payments()
@@ -22,6 +29,11 @@ public class PaymentController : ControllerBase
         return await _paymentInformationService.GetRecurPaymentResponses();
     }
 
+    /// <summary>
+    /// Получить информацию о рекуррентном платеже по переданному ID
+    /// </summary>
+    /// <param name="id">ID платежа</param>
+    /// <returns>Платеж по переданному ID</returns>
     [HttpGet]
     [Route("GetPayments/{id}")]
     public async Task<RecurOperationResponse> Payments(ulong id)

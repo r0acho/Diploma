@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Diploma.Presentation.Controllers;
 
+/// <summary>
+/// API для получения информации о фискальных чеках из БД
+/// </summary>
 [ApiController]
 [Route("[controller]")]
 public class CheckController
@@ -15,6 +18,10 @@ public class CheckController
         _checkInformationService = checkInformationService;
     }
     
+    /// <summary>
+    /// Получить информацию о всех чеках
+    /// </summary>
+    /// <returns>Список фискальных чеков</returns>
     [HttpGet]
     [Route("GetChecks/")]
     public async Task<IEnumerable<FiscalizeResponse>> GetAllChecks()
@@ -22,6 +29,11 @@ public class CheckController
         return await _checkInformationService.GetChecks();
     }
 
+    /// <summary>
+    /// Получить информацию по чеку по переданному ID
+    /// </summary>
+    /// <param name="id">ID чека</param>
+    /// <returns>Фискальный чек по его ID</returns>
     [HttpGet]
     [Route("GetChecks/{id}")]
     public async Task<FiscalizeResponse> GetCheckById(ulong id)
@@ -29,6 +41,11 @@ public class CheckController
         return await _checkInformationService.GetCheckById(id);
     }
     
+    /// <summary>
+    /// Получить информацию по чеку по переданному UUID
+    /// </summary>
+    /// <param name="uuid">UUID чека</param>
+    /// <returns>Фискальный чек по его UUID</returns>
     [HttpGet]
     [Route("GetChecks/{uuid}")]
     public async Task<FiscalizeResponse> GetCheckByUuid(string uuid)

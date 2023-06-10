@@ -9,8 +9,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Diploma.Presentation.Extensions;
 
+/// <summary>
+/// Класс расширений для инициализации зависимостей и добавлении их в DI-конвейер
+/// </summary>
 public static class Initializer
 {
+    /// <summary>
+    /// Инициализация репозиториев
+    /// </summary>
+    /// <param name="services">Набор зависимостей</param>
     public static void InitializeRepositories(this IServiceCollection services)
     {
         services.AddScoped<IResponsesRepository<RecurOperationResponse>, RecurPaymentResponsesRepository>();
@@ -18,6 +25,10 @@ public static class Initializer
         services.AddScoped<ISessionStatesRepository, SessionStatesRepository>();
     }
 
+    /// <summary>
+    /// Инициализация сервисов
+    /// </summary>
+    /// <param name="services">Набор зависимостей</param>
     public static void InitializeServices(this IServiceCollection services)
     {
         services.AddScoped<IFiscalizePaymentService, AtolFiscalizeService>();
@@ -29,6 +40,11 @@ public static class Initializer
         services.AddHostedService<KafkaConsumerService>();
     }
 
+    /// <summary>
+    /// Инициализация настроек из JSON-конфигурации файлов
+    /// </summary>
+    /// <param name="services">Набор зависимостей</param>
+    /// <param name="config">Класс конфигурации проекта</param>
     public static void InitializeSettings(this IServiceCollection services, IConfiguration config)
     {
         services.AddOptions();
@@ -37,6 +53,11 @@ public static class Initializer
         services.Configure<AtolSettings>(config.GetSection("AtolSettings"));
     }
     
+    /// <summary>
+    /// Инициализация базы данных к из JSON-конфигурации файлов
+    /// </summary>
+    /// <param name="services">Набор зависимостей</param>
+    /// <param name="config">Класс конфигурации проекта</param>
     public static void InitializeDatabase(this IServiceCollection services, IConfiguration config)
     {
         services.AddDbContext<ApplicationDbContext>(options => options

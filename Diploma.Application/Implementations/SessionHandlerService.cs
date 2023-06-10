@@ -8,13 +8,29 @@ using Microsoft.Extensions.Logging;
 
 namespace Diploma.Application.Implementations;
 
+/// <summary>
+/// Реализация сервиса для обработки сессий платежей.
+/// </summary>
 public class SessionHandlerService : ISessionHandlerService
 {
+    /// <summary>
+    /// Код успешного ответа от банка.
+    /// </summary>
     private const string SUCCESS_BANK_RESPONSE_CODE = "00";
+
+    /// <summary>
+    /// Код ошибки системной неисправности.
+    /// </summary>
     private const string SYSTEM_MALFUNCTION_BANK_RESPONSE_CODE = "96";
-    private const string SESSION_ABORTED = "Session aborted";
-    private const string SESSION_SUCCESSFULLY = "Session completed successfully";
+
+    /// <summary>
+    /// Стоимость промежуточной операции.
+    /// </summary>
     private const int INTERMEDIATE_SESSION_COST = 50;
+
+    /// <summary>
+    /// Стоимость одного киловатт-часа.
+    /// </summary>
     private const int COST_OF_ONE_KWH = 16;
 
     private readonly IFiscalizePaymentService _fiscalizePaymentService;
@@ -65,11 +81,21 @@ public class SessionHandlerService : ISessionHandlerService
         await _sessionStatesRepository.Update(_currentSessionStateModel);
     }
 
+    /// <summary>
+    /// Проверка успешности выполнения операции.
+    /// </summary>
+    /// <param name="response">Ответ от банка.</param>
+    /// <returns>True, если операция была выполнена без ошибок. False в противном случае.</returns>
     private static bool IsPaymentCompletedWithoutError(RecurOperationResponse response)
     {
         return response.ResponseCode is SUCCESS_BANK_RESPONSE_CODE or SYSTEM_MALFUNCTION_BANK_RESPONSE_CODE;
     }
     
+    /// <summary>
+    /// Добавление элемента в чек.
+    /// </summary>
+    /// <param name="paymentModel">Модель платежа.</param>
+    /// <param name="items">Коллекция элементов на чеке.</param>
     private static void AddItemToReceipt(PaymentModel paymentModel, ICollection<ItemFiscalReceiptDto> items)
     {
         items.Add(new ItemFiscalReceiptDto
@@ -98,6 +124,10 @@ public class SessionHandlerService : ISessionHandlerService
         }
     }
 
+    /// <summary>
+    /// Установка статуса сессии после завершения сессии.
+    /// </summary>
+    /// <param name="fiscalPaymentResponse">Ответ от сервиса фискализации на платеж в сессии.</param>
     private void SetSessionStatusAfterEndOfSession(FiscalizeResponse fiscalPaymentResponse)
     {
         if (_currentSessionStateModel.SumOfSessionsByBank != _currentSessionStateModel.SumOfSessionsByTouch)
@@ -124,8 +154,12 @@ public class SessionHandlerService : ISessionHandlerService
         _logger.LogInformation($"Сессия {_currentSessionStateModel!.Id} успешно завершена");
         _currentSessionStateModel.Status = SessionStatus.Success;
     }
-    
 
+    /// <summary>
+    /// Получение текущей сессии или создание новой сессии с указанным ID.
+    /// </summary>
+    /// <param name="sessionId">ID сессии.</param>
+    /// <returns>Существующая или созданная сессия.</returns>
     private async Task<SessionStateModel> GetOrCreateSession(ulong sessionId)
     {
         if (await _sessionStatesRepository.Exists(sessionId))

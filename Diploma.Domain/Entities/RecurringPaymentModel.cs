@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using Diploma.Domain.Dto;
 
 namespace Diploma.Domain.Entities;
 

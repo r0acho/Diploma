@@ -6,8 +6,17 @@ using Diploma.Domain.Enums;
 
 namespace Diploma.Domain.Extensions;
 
+/// <summary>
+/// Методы расширения для классов-сущностей.
+/// </summary>
 public static class EntityExtensions
 {
+    /// <summary>
+    /// Преобразует экземпляр <see cref="PaymentModel"/> в коллекцию пар ключ-значение с учетом списка ключей.
+    /// </summary>
+    /// <param name="payment">Экземпляр <see cref="PaymentModel"/>.</param>
+    /// <param name="keys">Список ключей, по которым следует производить фильтрацию.</param>
+    /// <returns>Коллекция пар ключ-значение.</returns>
     public static IEnumerable<KeyValuePair<string, string>> ToKeyValuePairsString(this PaymentModel payment,
         List<string> keys)
     {
@@ -47,6 +56,11 @@ public static class EntityExtensions
         }
     }
 
+    /// <summary>
+    /// Преобразует экземпляр <see cref="RecurringBankOperationDto"/> в экземпляр <see cref="RecurringPaymentModel"/>.
+    /// </summary>
+    /// <param name="recurringBankOperationDto">Экземпляр <see cref="RecurringBankOperationDto"/>.</param>
+    /// <returns>Экземпляр <see cref="RecurringPaymentModel"/>.</returns>
     public static RecurringPaymentModel GetModelFromDto(this RecurringBankOperationDto recurringBankOperationDto)
     {
         var model = new RecurringPaymentModel

@@ -1,51 +1,110 @@
 ﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography;
-using Diploma.Domain.Dto;
 using Diploma.Domain.Enums;
 
-namespace Diploma.Domain.Entities;
-
+/// <summary>
+/// Класс модели платежа.
+/// </summary>
 public record PaymentModel
 {
-    [DisplayName("AMOUNT")] public decimal Amount { get; set; }
+    /// <summary>
+    /// Сумма платежа.
+    /// </summary>
+    [DisplayName("AMOUNT")]
+    public decimal Amount { get; set; }
     
+    /// <summary>
+    /// Идентификатор заказа.
+    /// </summary>
     [DisplayName("ORDER")]
     public ulong Order { get; set; }
 
-    [DisplayName("DESC")] public string? Description { get; set; }
+    /// <summary>
+    /// Описание платежа.
+    /// </summary>
+    [DisplayName("DESC")]
+    public string? Description { get; set; }
 
-    [DisplayName("MERCH_NAME")] public string? MerchantName { get; set; }
+    /// <summary>
+    /// Название магазина.
+    /// </summary>
+    [DisplayName("MERCH_NAME")]
+    public string? MerchantName { get; set; }
 
-    [DisplayName("MERCHANT_NOTIFY_EMAIL")] public string? MerchantEmail { get; set; }
+    /// <summary>
+    /// Адрес электронной почты магазина.
+    /// </summary>
+    [DisplayName("MERCHANT_NOTIFY_EMAIL")]
+    public string? MerchantEmail { get; set; }
 
-    [DisplayName("EMAIL")] public string? Email { get; set; }
+    /// <summary>
+    /// Адрес электронной почты клиента.
+    /// </summary>
+    [DisplayName("EMAIL")]
+    public string? Email { get; set; }
 
-    [DisplayName("MERCHANT")] public string? MerchantId { get; set; }
+    /// <summary>
+    /// Идентификатор магазина.
+    /// </summary>
+    [DisplayName("MERCHANT")]
+    public string? MerchantId { get; set; }
 
-    [DisplayName("TERMINAL")] public ulong TerminalId { get; set; }
+    /// <summary>
+    /// Идентификатор терминала магазина.
+    /// </summary>
+    [DisplayName("TERMINAL")]
+    public ulong TerminalId { get; set; }
 
-    [DisplayName("CURRENCY")] public string? Currency { get; set; } = "RUB";
+    /// <summary>
+    /// Код валюты.
+    /// </summary>
+    [DisplayName("CURRENCY")]
+    public string? Currency { get; set; } = "RUB";
 
-    [DisplayName("TRTYPE")] public TrType trType { get; set; }
+    /// <summary>
+    /// Тип операции.
+    /// </summary>
+    [DisplayName("TRTYPE")]
+    public TrType trType { get; set; }
 
-    [DisplayName("TIMESTAMP")] public string Timestamp { get; set; } = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+    /// <summary>
+    /// Временная метка запроса в формате yyyyMMddHHmmss.
+    /// </summary>
+    [DisplayName("TIMESTAMP")]
+    public string Timestamp { get; set; } = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
 
-    [DisplayName("NONCE")] public string Nonce { get; set; } = GetRandomHexString();
+    /// <summary>
+    /// Случайное шестнадцатеричное число для идентификации запроса.
+    /// </summary>
+    [DisplayName("NONCE")]
+    public string Nonce { get; set; } = GetRandomHexString();
 
-    [DisplayName("BACKREF")] public string? ModuleUrl { get; set; }
+    /// <summary>
+    /// URL, на который будет перенаправлен клиент при завершении платежа.
+    /// </summary>
+    [DisplayName("BACKREF")]
+    public string? ModuleUrl { get; set; }
 
-    [DisplayName("NOTIFY_URL")] public string? ModuleNotifyUrl { get; set; }
+    /// <summary>
+    /// URL, на который будет отправлен POST-запрос с результатами платежа.
+    /// </summary>
+    [DisplayName("NOTIFY_URL")]
+    public string? ModuleNotifyUrl { get; set; }
 
-    [DisplayName("PaymentStatus")] public PaymentStatus Status { get; set; } = PaymentStatus.InProgress;
-
+    /// <summary>
+    /// Получает случайную строку шестнадцатеричных символов заданной длины.
+    /// </summary>
+    /// <param name="length">Длина строки.</param>
+    /// <returns>Строка шестнадцатеричных символов.</returns>
     private static string GetRandomHexString(int length = 32)
     {
         using var csprng = RandomNumberGenerator.Create();
+        
+        // Создаем массив байтов заданной длины и заполняем его случайными значениями
         var bytes = new byte[length];
-
         csprng.GetNonZeroBytes(bytes);
+
+        // Преобразуем массив байтов в строку шестнадцатеричных символов и возвращаем ее
         return Convert.ToHexString(bytes);
     }
 }

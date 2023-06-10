@@ -8,6 +8,9 @@ using Microsoft.Extensions.Options;
 
 namespace Diploma.Presentation.Controllers;
 
+/// <summary>
+/// API для взаимодействия с брокером Kafka
+/// </summary>
 [ApiController]
 [Route("[controller]")]
 public class KafkaProducerController : Controller
@@ -26,6 +29,11 @@ public class KafkaProducerController : Controller
     }
 
 
+    /// <summary>
+    /// Отправить сообщение в брокер
+    /// </summary>
+    /// <param name="receivedData">Тело сообщения с запросом на рекуррентный платеж</param>
+    /// <returns>Status-code операции</returns>
     [HttpPost("RecurMessage")]
     public async Task<IActionResult> ProduceRecurMessage([FromBody] RecurringBankOperationDto receivedData)
     {

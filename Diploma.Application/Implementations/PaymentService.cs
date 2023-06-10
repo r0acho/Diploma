@@ -10,6 +10,9 @@ using Microsoft.Extensions.Options;
 
 namespace Diploma.Application.Implementations;
 
+/// <summary>
+/// Реализация сервиса для выполнения операций с банком.
+/// </summary>
 public class PaymentService : IPaymentService
 {
     private readonly BankSettings _bankSettings;
@@ -25,6 +28,7 @@ public class PaymentService : IPaymentService
         _httpClient = new BankHttpClient(bankSettings.Value.BankUrl);
     }
 
+    /// <inheritdoc/>
     public async Task<RecurOperationResponse> ExecuteRecurringPayment(RecurringPaymentModel recurringBankOperation)
     {
         _bankOperationService = new RecurringExecution(recurringBankOperation, _bankSettings);
